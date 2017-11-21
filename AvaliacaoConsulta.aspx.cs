@@ -48,7 +48,11 @@ public partial class AvaliacaoConsulta : System.Web.UI.Page
         if (Conexao.conexao.State != ConnectionState.Open)
             Conexao.conexao.Open();
 
-        var comando = new SqlCommand("SELECT * FROM consultasPendentes_vw", Conexao.conexao);
+        ddlConsulta.Items.Clear();
+
+        var comando = new SqlCommand("SELECT * FROM consultasPendentes_vw WHERE usuario = @usuario", Conexao.conexao);
+
+        comando.Parameters.AddWithValue("@usuario", Session["paciente"].ToString());
 
         leitor = comando.ExecuteReader();
 
@@ -63,9 +67,9 @@ public partial class AvaliacaoConsulta : System.Web.UI.Page
 
     private void AdicionarConsulta(string codConsulta, DateTime dataHoraConsulta, bool meiaHora, string nomeMedico, string nomeEspecialidade)
     {
-        string novoItem = nomeMedico + " (" + nomeEspecialidade + ") " + dataHoraConsulta.ToString("dd/mm/yyyy") + " -> "; //A consulta deve ser formatada para melhos visualização
+        string novoItem = nomeMedico + " (" + nomeEspecialidade + ") " + dataHoraConsulta.ToString("dd/MM/yyyy HH:mm") + " -> "; //A consulta deve ser formatada para melhos visualização
 
-        novoItem += meiaHora ? dataHoraConsulta.AddMinutes(30).ToString("dd/mm/yyyy") : dataHoraConsulta.AddHours(1).ToString("dd/mm/yyyy"); //O término da consulta é calculado baseado em se esta foi cadastrada como "meiaHora" ou não
+        novoItem += meiaHora ? dataHoraConsulta.AddMinutes(30).ToString("HH:mm") : dataHoraConsulta.AddHours(1).ToString("HH:mm"); //O término da consulta é calculado baseado em se esta foi cadastrada como "meiaHora" ou não
 
         ddlConsulta.Items.Add(novoItem);
 
@@ -89,12 +93,17 @@ public partial class AvaliacaoConsulta : System.Web.UI.Page
 
             var comando = new SqlCommand("avaliacaoConsultaPaciente_sp", Conexao.conexao);
 
+            comando.CommandType = CommandType.StoredProcedure;                                 
+
             comando.Parameters.AddWithValue("@codConsulta", ddlConsulta.SelectedValue);
             comando.Parameters.AddWithValue("@nivelSatisfacao", nota);
             comando.Parameters.AddWithValue("@descricao", comentario);
+            
             int linhasAlteradas = comando.ExecuteNonQuery();
+
             Conexao.conexao.Close();
-            if (linhasAlteradas != 1)
+
+            if (linhasAlteradas != 2) // Uma na tabela de avaliações e outra na tabela de consultas (que foi atualizada)
             {
                 throw new Exception("AvaliacaoConsulta: Erro de BD");
             }
@@ -112,6 +121,8 @@ public partial class AvaliacaoConsulta : System.Web.UI.Page
                 Conexao.conexao.Close();
 
             lblMensagem.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Tente novamente mais tarde...";
+
+            lblMensagem.ForeColor = System.Drawing.Color.Red;
         }
     }
 }

@@ -27,17 +27,17 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-           /* try
+           /*try
             {
-                if (string.IsNullOrEmpty(Session["crm"].ToString())
-                    || string.IsNullOrEmpty(Session["usuario"].ToString()))
+                if ((!string.IsNullOrEmpty(Session["crm"].ToString()))
+                    || (!string.IsNullOrEmpty(Session["usuario"].ToString())))
                     Response.Redirect("Principal.aspx");
             }
             catch
             {
                 Response.Redirect("Principal.aspx");
-            }
-            */
+            }*/
+            
             Inicializar();
         }       
     }
@@ -46,7 +46,6 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
     {
         PreencherDDLAnoCancelamento();
         PrepararGraficosDosGraficos();
-        PreencherGraficos();
     }    
 
     private void PreencherGraficos()
@@ -64,7 +63,7 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
 
         BarChartSeries valores = new BarChartSeries();
 
-        int crm = Convert.ToInt32(ddlMedico.SelectedValue.ToString());
+        int crm = Convert.ToInt32(ddlMedico.SelectedValue);
 
         valores.Data = ConsultasNoAno(DateTime.Now.Year, crm); //Populamento da gráfico
 
@@ -90,7 +89,7 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
         {
             PieChartValue novoValor = new PieChartValue();
 
-            procedimento = new SqlCommand("SELECT * FROM atendimentoPorEspecialidade_view WHERE ", Conexao.conexao);
+            procedimento = new SqlCommand("atendimentoPorEspecialidade_sp", Conexao.conexao);
             procedimento.CommandType = CommandType.StoredProcedure;
 
             procedimento.Parameters.AddWithValue("@codEspecialidade", especialidades.Keys.ElementAt(i));
@@ -148,7 +147,7 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
         {
             decimal consultasDoMes = 0;
 
-            query = new SqlCommand("consultasNoMes_view", Conexao.conexao);
+            query = new SqlCommand("consultasNoMes_sp", Conexao.conexao);
             query.CommandType = CommandType.StoredProcedure;
 
             query.Parameters.AddWithValue("@ano", ano);
@@ -202,7 +201,7 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
         if (Conexao.conexao.State != ConnectionState.Open)
             Conexao.conexao.Open();
 
-        SqlCommand query = new SqlCommand("consultasDosPacientes_view", Conexao.conexao);
+        SqlCommand query = new SqlCommand("consultasDosPacientes_sp", Conexao.conexao);
 
         query.CommandType = CommandType.StoredProcedure;
 
@@ -254,11 +253,12 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
         {
             decimal cancelamentosDoMes = 0;
 
-            query = new SqlCommand("consultasCanceladasNoMes_view", Conexao.conexao);
+            query = new SqlCommand("consultasCanceladasNoMes_sp", Conexao.conexao);
             query.CommandType = CommandType.StoredProcedure;
 
-            query.Parameters.AddWithValue("@ano", ano);
+            
             query.Parameters.AddWithValue("@mes", mes);
+            query.Parameters.AddWithValue("@ano", ano);
 
             var leitor = query.ExecuteReader();
 
@@ -300,5 +300,21 @@ public partial class MedicaoEstatisticas : System.Web.UI.Page
     {
         for (int ano = ANO_CRIACAO_CLINICA; ano <= DateTime.Now.Year; ano++)
             ddlAnoCancelamento.Items.Add(ano.ToString());
+    }
+
+    protected void ddlMedico_Load(object sender, EventArgs e)
+    {
+   
+    }
+
+
+    protected void ddlMedico_Init(object sender, EventArgs e)
+    {
+
+    }
+
+    protected void ddlMedico_DataBound(object sender, EventArgs e)
+    {
+        PreencherGraficos();
     }
 }

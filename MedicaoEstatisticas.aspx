@@ -7,7 +7,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     <p>
         Consultas do médico
-        <asp:DropDownList ID="ddlMedico" runat="server" DataSourceID="dsEstatistica" DataTextField="nome" DataValueField="crm" AutoPostBack="True">
+        <asp:DropDownList ID="ddlMedico" runat="server" DataSourceID="dsEstatistica" DataTextField="nome" DataValueField="crm" AutoPostBack="True" OnDataBound="ddlMedico_DataBound">
         </asp:DropDownList>
         &nbsp;</p>
     <ajaxToolkit:BarChart ID="grafConsultasMedico" runat="server" ChartHeight="100" ChartTitle="Consultas por mês" Height="386px">

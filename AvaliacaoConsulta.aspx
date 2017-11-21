@@ -19,20 +19,37 @@
     <br />
     <h1>Avaliação da Consulta</h1>
         Ficamos felizes em ouvir sua opinião, quando terminar, por favor clique em &quot;Postar Avaliação&quot;<br />
-        <asp:Label ID="lblMensagem" runat="server" Text="[lblErro]" ForeColor="Red"></asp:Label>
-        <p>
+        <asp:Label ID="lblMensagem" runat="server" ForeColor="Red"></asp:Label>
+        <table>
+            <tr>
+                <td>
+            <asp:Label ID="Label3" runat="server" Text="Consulta: "></asp:Label>
+                </td>
+                <td>
         <asp:DropDownList ID="ddlConsulta" runat="server">
         </asp:DropDownList>
-    </p>
-    <p>
-        De 0 a 10, eu classificaria essa consulta como
+                </td>
+            </tr>
+            <tr>
+                <td><asp:Label ID="Label1" runat="server" Text="Nota: "></asp:Label>
+                </td>
+                <td>
         <asp:TextBox ID="txtNota" runat="server" TextMode="Number" min="0" max="10" step="1" Width="63px"></asp:TextBox>
-    &nbsp;<asp:RequiredFieldValidator ID="vldNota" runat="server" ControlToValidate="txtComentario" ErrorMessage="Por favor, informe a nota"></asp:RequiredFieldValidator>
-    </p>
-    <p>
-        Também gostaria de dizer que
+                    <asp:RequiredFieldValidator ID="vldNota" runat="server" ControlToValidate="txtNota" ErrorMessage="Por favor, informe a nota"></asp:RequiredFieldValidator>
+                &nbsp;&nbsp;
+                    <asp:RangeValidator ID="vldNumNota" runat="server" ControlToValidate="txtNota" ErrorMessage="Nota inválida" MaximumValue="10" MinimumValue="0" Type="Integer"></asp:RangeValidator>
+                </td>
+            </tr>
+            <tr>
+                <td>
+        <asp:Label ID="Label2" runat="server" Text="Comentarios:"></asp:Label>
+                </td>
+                <td>
         <asp:TextBox ID="txtComentario" runat="server" Height="100px" TextMode="MultiLine" Width="263px"></asp:TextBox>
-    </p>
+        <asp:RequiredFieldValidator ID="vldComentarios" runat="server" ErrorMessage="Por favor, justifique sua nota" ControlToValidate="txtComentario"></asp:RequiredFieldValidator>
+                </td>
+            </tr>
+    </table>
     <p>
         <asp:Button ID="btnPostar" runat="server" Text="Postar Avaliação" OnClick="btnPostar_Click" />
     </p>

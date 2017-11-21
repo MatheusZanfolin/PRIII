@@ -125,7 +125,7 @@ public partial class CadPacienteSA : System.Web.UI.Page
     {
         //Dados que, com certeza, não são nulos
         txtEndereco.Text   = usuario.Endereco;                              
-        txtNascimento.Text = usuario.DataNascimento.ToString("dd/mm/yyyy");
+        txtNascimento.Text = usuario.DataNascimento.ToString("dd/MM/yyyy");
         txtEmail.Text      = usuario.Email;
         txtTelefone.Text   = usuario.Telefone;
         imgFoto.ImageUrl   = usuario.Foto;
