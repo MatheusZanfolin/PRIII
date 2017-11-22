@@ -10,23 +10,27 @@ using System.Web.Configuration;
 public partial class UltimasConsultasPac : System.Web.UI.Page
 {
     private SqlDataReader rdr;
-    private string usuarioPacOnline ;
-    private List<int> crms = new List<int>();
+    private static string usuarioPacOnline ;
+    private static List<int> crms = new List<int>();
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
+            crms.Clear();
             try
             {
                 if (string.IsNullOrEmpty(Session["paciente"].ToString()))
                     Response.Redirect("LogonPac.aspx");
+                else
+                    usuarioPacOnline = Session["paciente"].ToString();
             }
             catch
             {
                 Response.Redirect("LogonPac.aspx");
             }
-            try
-            {
+           /* try
+            {*/
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
                 string query = "select * from medicosRelPac_view where usuario=@usuario";
                 SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
@@ -37,8 +41,12 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 {
                     while (rdr.Read())
                     {
+                    if (crms.Count==0 || !crms.Exists(x => x == Convert.ToInt32(rdr.GetValue(0))))
+                    {
                         crms.Add(Convert.ToInt32(rdr.GetValue(0)));
+
                         lsbMedico.Items.Add(rdr.GetValue(1).ToString());
+                    }
                     }
                 }
                 else
@@ -49,7 +57,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr.Close();
                 Conexao.conexao.Close();
                 rdr = null;
-            }
+        /*    }
             catch
             {
                 if(rdr!=null)
@@ -59,21 +67,21 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr = null;
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
 
-            }
+            }*/
         }
     }
 
     protected void btnGeraRelatorio_Click(object sender, EventArgs e)
     {
-        try
-        {
+        /*try
+        {*/
 
             int numero = Convert.ToInt32(txtNumero.Text);
             string nomeMedSel = lsbMedico.Items[lsbMedico.SelectedIndex].Text;
             int crmSel = crms[lsbMedico.SelectedIndex];
 
             string query = "SELECT TOP(@numero) * FROM ultimasConsultas_view " +
-                "WHERE crm  = @crm AND usuario = @usuario  ORDER BY dataHoraConsuta DESC";
+                "WHERE crm  = @crm AND usuario = @usuario  ORDER BY dataHoraConsulta DESC";
             Conexao.conexao.Open();
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
@@ -108,7 +116,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr = null;
                 return;
             }
-        }
+       /* }
         catch
         {
             if (rdr != null)
@@ -117,25 +125,33 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 Conexao.conexao.Close();
             rdr = null;
             lblErro.Text ="Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
-        }
+        }*/
     }
     private void insereNaMatriz(int codConsulta, DateTime dataHora, string diagnostico)
     {
         int indLinha = tabDados.Rows.Count;
+        string hora, minuto;
+        hora = dataHora.Hour.ToString();
+        minuto = dataHora.Minute.ToString();
+        while (hora.Length < 2)
+            hora = "0" + hora;
+        while (minuto.Length < 2)
+            minuto = "0" + minuto;
         tabDados.Rows.Add(new TableRow());
         for (int i = 0; i < 4; i++)
             tabDados.Rows[indLinha].Cells.Add(new TableCell());
         tabDados.Rows[indLinha].Cells[0].Text = codConsulta.ToString();
         tabDados.Rows[indLinha].Cells[1].Text = dataHora.Day + "/" + dataHora.Month + "/" + dataHora.Year;
-        tabDados.Rows[indLinha].Cells[2].Text = dataHora.Hour + ":" + dataHora.Minute;
+        tabDados.Rows[indLinha].Cells[2].Text =  hora + ":" + minuto;
         tabDados.Rows[indLinha].Cells[3].Text = diagnostico;
     }
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        int numLinhas = tabDados.Rows.Count;
+        /*int numLinhas = tabDados.Rows.Count;
         for (int i = numLinhas - 1; i >= 0; i++)
             tabDados.Rows.RemoveAt(i);
-        btnGeraRelatorio_Click(null, null);
+        btnGeraRelatorio_Click(null, null);*/
+        Response.Redirect("UltimasConsultasPac.aspx");
     }
 }

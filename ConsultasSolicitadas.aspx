@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#"  MasterPageFile="~/Site.master"AutoEventWireup="true" CodeFile="ConsultasSolicitadas.aspx.cs" Inherits="ConsultasSolicitadas" %>
+﻿ <%@ Page Language="C#"  MasterPageFile="~/Site.master"AutoEventWireup="true" CodeFile="ConsultasSolicitadas.aspx.cs" Inherits="ConsultasSolicitadas" %>
 
 <asp:Content ID="ContentAgendarConsultaSA" ContentPlaceHolderID="MainContent" Runat="Server">
 
@@ -24,7 +24,7 @@
             </Items>
         </asp:Menu>
         <h1>Consultas Solicitadas</h1>
-        <asp:Label ID="lblErro" runat="server" Text="[lblErro]" ForeColor="Red"></asp:Label>
+        <asp:Label ID="lblErro" runat="server" ForeColor="Red"></asp:Label>
         <table>
             <tr>
                 <td><asp:Label ID="Label1" runat="server" Text="Selecione a consulta:"></asp:Label></td>
@@ -63,12 +63,15 @@
             <tr>
                 <td>
                     <asp:Label ID="Label4" runat="server" Text="Dia:"></asp:Label>
+                    <%--<asp:Calendar> ID="cldData" runat="server" OnSelectionChanged="cldData_SelectionChanged"></asp:Calendar>--%>
                 </td>
                 <td>
-            <asp:TextBox ID="txtData" runat="server" OnTextChanged="txtData_TextChanged" TextMode="Date"></asp:TextBox>
           
 
-            <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ValidationGroup="txtData" ControlToValidate="txtData"></asp:RequiredFieldValidator>
+                    <asp:TextBox ID="txtData" runat="server"></asp:TextBox>
+          
+
+            <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ControlToValidate="txtData"></asp:RequiredFieldValidator>
           
 
                 </td>

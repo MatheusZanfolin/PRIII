@@ -22,7 +22,7 @@
 
         <br />
     <h1>Solicitar Consulta</h1>
-        <asp:Label ID="lblErro" runat="server" Text="[lblErro]" ForeColor="Red"></asp:Label>
+        <asp:Label ID="lblErro" runat="server" ForeColor="Red"></asp:Label>
         <table>
             <tr>
                 <td><asp:Label ID="Label1" runat="server" Text="Especialidade:"></asp:Label></td>
@@ -34,7 +34,7 @@
             </tr>
             <tr>
                 <td><asp:Label ID="Label3" runat="server" Text="Dia:"></asp:Label></td>
-                <td><asp:TextBox ID="txtData" runat="server" OnTextChanged="txtData_TextChanged" TextMode="Date"></asp:TextBox> <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ValidationGroup="txtData" ControlToValidate="txtData"></asp:RequiredFieldValidator></td>
+                <td><asp:TextBox ID="txtData" runat="server" OnTextChanged="txtData_TextChanged" TextMode="Date" AutoPostBack="True"></asp:TextBox> <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ValidationGroup="txtData" ControlToValidate="txtData"></asp:RequiredFieldValidator></td>
             </tr>
             <tr>
                 <td><asp:Label ID="Label4" runat="server" Text="Horários Disponíveis:"></asp:Label></td>

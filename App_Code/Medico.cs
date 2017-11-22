@@ -8,69 +8,52 @@ using System.Web;
 /// </summary>
 public class Medico
 {
-    private int crm;
+   
     public int CRM{
-	get{
-	return crm;
-
+        get;
+        private set;
 	}
-	}
-    private string nome;
+    
     public string Nome{
-	get{
-	return nome;
-
-	}
-	}
-    private DateTime dataNascimento;
+        get;
+        private set;
+    }
+    
     public DateTime DataNascimento{
-	get{
-            return dataNascimento;
-
-	}
-	}
-    private string email;
+        get;
+        private set;
+    }
+   
     public string Email{
-	get{
-	return email;
-
-	}
-	}
-    private string celular;
+        get;
+        private set;
+    }
+   
     public string Celular{
-	get{
-	return celular;
-
-	}
-	}
-    private string telefone;
+        get;
+        private set;
+    }
+   
     public string Telefone{
-	get{
-	return telefone;
-
-	}
-	}
-    private string senha;
+        get;
+        private set;
+    }
+   
     public string Senha{
-	get{
-	return senha;
-
-	}
-	}
-    private int codEspecialidade;
+        get;
+        private set;
+    }
+   
     public int CodEspecialidade{
-	get{
-	return codEspecialidade;
-
-	}
-	}
-    private string foto;
+        get;
+        private set;
+    }
+  
     public string Foto{
-	get{
-	return foto;
-
-	}
-	}
+        get;
+        private set;
+    }
+	
     public Medico(int c, string n, int e)
     {
         if (c <= 0)
@@ -79,16 +62,27 @@ public class Medico
             throw new Exception("Nome de Médico inválido!");
         if(e<=0)
             throw new Exception("Código de Especialidade de Médico inválido!");
-        this.crm = c;
-        this.nome = n;
-        this.codEspecialidade = e;
+        this.CRM = c;
+        this.Nome = n;
+        this.CodEspecialidade = e;
     }
     public Medico(int c, string n) {
         if (c <= 0)
             throw new Exception("Código de Médico inválido!");
         if (n == null || n == "")
             throw new Exception("Nome de Médico inválido!");
-        this.codEspecialidade = c;
-        this.nome = n;
+        this.CRM = c;
+        this.Nome = n;
+    }
+    public bool Equals(Object outro)
+    {
+        if (this == outro)
+            return true;
+        if (outro == null)
+            return false;
+        Medico m = (Medico)outro;
+        if (m.CRM == CRM && m.Nome == Nome)
+            return true;
+        return false;
     }
 }

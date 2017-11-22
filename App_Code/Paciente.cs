@@ -25,6 +25,17 @@ public class Paciente
         Usuario = usuario;
         Nome = nome;       
     }
+    public bool Equals(Object outro)
+    {
+        if (outro == this)
+            return true;
+        if (outro == null)
+            return false;
+        Paciente p = (Paciente)outro;
+        if (p.Nome == Nome && p.Usuario == Usuario)
+            return true;
+        return false;
+    }
     public string Nome { get; private set; }
 
     public decimal QuantasConsultas { get; private set; }

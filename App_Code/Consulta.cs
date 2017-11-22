@@ -1,42 +1,42 @@
 using System;
 
 public partial class Consulta{
-private int codConsulta;
+
 public int CodConsulta { 
 get;
 private set;
 }
-private DateTime dataHoraConsulta;
+
 public DateTime DataHoraConsulta{
 get;
 private set;
 }
-private bool meiaHora;
+
 public  bool MeiaHora{
 get;
 private set;
 }
-private int codStatus;
-public int CodStatus{
+
+public int CodStatus
+{
 get;
 private set;
 }
-private string diagnostico;
 public string Diagnostico{
 get;
 private set;
 }
-private int codAvaliacao;
+
 public int CodAvaliacao{
 get;
 private set;
 }
-private int crm;
+
 public int Crm{
 get;
 private set;
 }
-private string usuario;
+
 public string Usuario{
 get;
 private set;
@@ -52,10 +52,21 @@ private set;
             throw new Exception("CRM inválido!");
         if (string.IsNullOrEmpty(usuario))
             throw new Exception("Nome de usuário inválido!");
-        this.codConsulta = codConsulta;
-        this.dataHoraConsulta = dataHoraConsulta;
-        this.crm = crm;
-        this.usuario = usuario;
+        this.CodConsulta = codConsulta;
+        this.DataHoraConsulta = dataHoraConsulta;
+        this.Crm = crm;
+        this.Usuario = usuario;
 
+    }
+    public bool Equals(Object outro)
+    {
+        if (this == outro)
+            return true;
+        if (outro == null)
+            return false;
+        Consulta c = (Consulta)outro;
+        if (c.CodConsulta == this.CodConsulta && c.DataHoraConsulta.Equals(DataHoraConsulta) && c.Crm == Crm && c.Usuario == Usuario)
+            return true;
+        return false;
     }
 }

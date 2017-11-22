@@ -10,7 +10,7 @@ using System.Web.Configuration;
 public partial class UltimasConsultasMed : System.Web.UI.Page
 {//default(classes e structs) é private, por isso não coloquei
     SqlDataReader rdr;
-    int crmMedOnline;
+    static int crmMedOnline;
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -19,6 +19,8 @@ public partial class UltimasConsultasMed : System.Web.UI.Page
             {
                 if (string.IsNullOrEmpty(Session["crm"].ToString()))
                     Response.Redirect("LogonMedico.aspx");
+                else
+                    crmMedOnline = Convert.ToInt32(Session["crm"]);
             }
             catch
             {
@@ -112,9 +114,10 @@ public partial class UltimasConsultasMed : System.Web.UI.Page
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        int numLinhas = tabDados.Rows.Count;
+        /*int numLinhas = tabDados.Rows.Count;
         for (int i = numLinhas - 1; i >= 0; i++)
             tabDados.Rows.RemoveAt(i);
-        btnGeraRelatorio_Click(null, null);
+        btnGeraRelatorio_Click(null, null);*/
+        Response.Redirect("UltimasConsultasMed.aspx");
     }
 }

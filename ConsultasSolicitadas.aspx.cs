@@ -10,10 +10,10 @@ using System.Web.Configuration;
 public partial class ConsultasSolicitadas : System.Web.UI.Page
 {//default(classes) é private, por isso não coloquei
     SqlDataReader rdr;
-    List<Consulta> listaCons = new List<Consulta>();
-    List<Medico> listaMed = new List<Medico>();
-    List<Paciente> listaPac = new List<Paciente>();
-    List<DateTime> horarios = new List<DateTime>();//lista de horários
+    static List<Consulta> listaCons = new List<Consulta>();
+    static List<Medico> listaMed = new List<Medico>();
+    static List<Paciente> listaPac = new List<Paciente>();
+    static List<DateTime> horarios = new List<DateTime>();//lista de horários
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -27,46 +27,72 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             {
                 Response.Redirect("logonSA.aspx");
             }
-            try
-            {
-                string query = "select * from VerConsultaSolicitada_view";
+            /*try
+            {*/
+            //cldData.SelectionMode = CalendarSelectionMode.Day;
+            if (Conexao.conexao.State != System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
-                SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
+            string query = "select * from selectMed_view";
+            SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
+            cmd.CommandType = System.Data.CommandType.Text;
+            rdr = cmd.ExecuteReader();
+            if (rdr.HasRows)
+            {
+                Medico medAtual = null;
+                while (rdr.Read())
+                {
+                    medAtual = new Medico(Convert.ToInt32(rdr.GetValue(0)), rdr.GetValue(1).ToString());
+                    listaMed.Add(medAtual);
+                }
+            }
+            int qtdMed = listaMed.Count;
+            for (int i = 0; i < qtdMed; i++)
+            {
+                lsbMedico.Items.Add(listaMed[i].Nome.ToString());
+            }
+             query = "select * from VerConsultaSolicitada_view";
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
+                Conexao.conexao.Open();
+                cmd = new SqlCommand(query, Conexao.conexao);
                 cmd.CommandType = System.Data.CommandType.Text;
                 rdr = cmd.ExecuteReader();
                 if (rdr.HasRows)
                 {
                     Consulta consAtual = null;
-                    Medico medAtual = null;
+                   
                     Paciente pacAtual = null;
                     while (rdr.Read())
                     {
                         consAtual = new Consulta(Convert.ToInt32(rdr.GetValue(0)), (DateTime)(rdr.GetValue(1)), Convert.ToInt32(rdr.GetValue(3)), rdr.GetValue(5).ToString());
-                        listaCons.Add(consAtual);
-                        medAtual = new Medico(Convert.ToInt32(rdr.GetValue(3)), rdr.GetValue(2).ToString());
-                        listaMed.Add(medAtual);
+                        if(!listaCons.Exists(x => x.Equals(consAtual)))
+                            listaCons.Add(consAtual);
+                    /*    medAtual = new Medico(Convert.ToInt32(rdr.GetValue(3)), rdr.GetValue(2).ToString());
+                        if (!listaMed.Exists(x => x.Equals(medAtual)))
+                            listaMed.Add(medAtual);*/
                         pacAtual = new Paciente(rdr.GetValue(5).ToString(), rdr.GetValue(4).ToString());
-                    }
+                        if (!listaPac.Exists(x => x.Equals(pacAtual)))
+                            listaPac.Add(pacAtual);
+                }
                     
                     int qtdCons = listaCons.Count;//qtde de consultas
+                    //int qtdMed = listaMed.Count;
                     for (int i = 0; i < qtdCons; i++)
                     {
                         lsbConsulta.Items.Add(listaCons[i].CodConsulta.ToString());
                     }
-                    for (int i = 0; i < qtdCons; i++)
-                    {
-                        lsbMedico.Items.Add(listaMed[i].Nome.ToString());
-                    }
+                   
                     alterarCampos(listaCons[0].CodConsulta);
                 }
                 else
                 {
                     lblErro.Text = "Não há nenhuma consulta solicitada!";
                 }
-                rdr.Close();
+                if(rdr!=null)
+                    rdr.Close();
                 rdr = null;
-                Conexao.conexao.Close();
-            }
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Closed)
+            Conexao.conexao.Close();
+           /* }
             catch
             {
                 if (rdr != null)
@@ -76,12 +102,12 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                 rdr = null;
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
 
-            }
+          //  }*/
         }
     }
     private void alterarCampos(int codConsulta)
     {
-        Consulta consAtual = listaCons.Find(x => x.CodConsulta == codConsulta);
+        Consulta consAtual = listaCons.Find(x => x.CodConsulta== codConsulta);
         int qtdConsultas = listaCons.Count;
         int i;
         for (i = 0; i < qtdConsultas; i++)
@@ -106,37 +132,56 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         lsbMedico.Items[j].Selected = true;
         txtPaciente.Text = listaPac.Find(x => x.Usuario == consAtual.Usuario).Nome;
         int qtdHorarios = lsbHorarios.Rows;
-        for(int k = qtdHorarios - 1; k >= 0; k--)
+        if (lsbHorarios.Items.Count>0)
         {
-            lsbHorarios.Items.RemoveAt(k);
+            for (int k = qtdHorarios - 1; k >= 0; k--)
+            {
+                lsbHorarios.Items.RemoveAt(k);
+            }
         }
         DateTime dataAtual = consAtual.DataHoraConsulta;
+        //cldData.SelectedDate = dataAtual;
         txtData.Text = dataAtual.Day.ToString() + '/'+ dataAtual.Month.ToString() + '/' + dataAtual.Year.ToString();
-        rbHora.Checked = false;
-        for ( i = 9; (i < 12 || i >= 14) && i < 18; i++)
+ //       rbHora.Checked = false;
+        for ( i = 9; (i < 12 || i >= 14) && i < 17; i++)
         {// médico trabalha das 9 às 17 e das 12h às 14h tem horário de almoço
             horarios.Add(new DateTime(dataAtual.Year, dataAtual.Month, dataAtual.Day, i, 0, 0));
-            horarios.Add(new DateTime(dataAtual.Year, dataAtual.Month, dataAtual.Day, i, 30, 0));
+
+            if (i != 17)
+                horarios.Add(new DateTime(dataAtual.Year, dataAtual.Month, dataAtual.Day, i, 30, 0));
+
+            if (i == 11)
+                i = 13;
         }
         string query = "select * from HorarioDispMed_view " +
         "where crm = @crm and YEAR(dataHoraConsulta)=YEAR(@data)"
         +"and MONTH(dataHoraConsulta)= MONTH(@data) "
-        +"and DAY(dataHoraConsulta)= DAY(@data)";
+        +"and DAY(dataHoraConsulta)= DAY(@data) and not(meiaHora is null)";
         DateTime horarioAtual;
+        if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
         Conexao.conexao.Open();
         SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
         cmd.CommandType = System.Data.CommandType.Text;
         cmd.Parameters.Add(new SqlParameter("@crm", crmAtual));
         cmd.Parameters.Add(new SqlParameter("@data", dataAtual));
         rdr = cmd.ExecuteReader();
-        bool meiaHora;
+        bool meiaHora = true;
         if (rdr.HasRows)
         {
             int indiceHorarioAtual;
             while (rdr.Read())
             {
                 horarioAtual = (DateTime)rdr.GetValue(0);
-                meiaHora = (bool)rdr.GetValue(1);
+
+                try
+                {    meiaHora = Convert.ToBoolean(rdr.GetValue(1));
+                
+                }
+                catch
+                {
+                } 
+                    
+                            
                 if (horarios.Exists(x => x.Equals(horarioAtual)))
                 {
                     indiceHorarioAtual = horarios.FindIndex(x => x.Equals(horarioAtual));
@@ -145,35 +190,56 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                         horarios.RemoveAt(indiceHorarioAtual);
                 }
             }
-            string hora, min, seg;
-            foreach (DateTime horario in horarios)
-            {
-                hora = horario.Hour.ToString();
-                min = horario.Minute.ToString();
-                seg = horario.Second.ToString();
-                while (hora.Length < 2)
-                    hora = "0" + hora;
-                while (min.Length < 2)
-                    min = "0" + min;
-                while (seg.Length < 2)
-                    seg = "0" + seg;
-                lsbHorarios.Items.Add(hora + ":" + min + ":" + seg);
-            }
-            int indHorario;
-            for (indHorario = 0; indHorario < lsbHorarios.Rows; indHorario++)
-            {
-                if (lsbHorarios.Items[i].Text == dataAtual.Hour + ":" + dataAtual.Minute + ":" + dataAtual.Second)
-                    break;
-            }
-            lsbHorarios.Items[indHorario].Selected = true;
+          
         }
-        else
+        string hora, min, seg;
+        foreach (DateTime horario in horarios)
         {
-            lblErro.Text = "Não há horários disponíveis para o médico " + medAtual.Nome + " no dia "+ dataAtual.Day +"/"+dataAtual.Month+"/"+dataAtual.Year;
+            hora = horario.Hour.ToString();
+            min = horario.Minute.ToString();
+            seg = horario.Second.ToString();
+            while (hora.Length < 2)
+                hora = "0" + hora;
+            while (min.Length < 2)
+                min = "0" + min;
+            while (seg.Length < 2)
+                seg = "0" + seg;
+            lsbHorarios.Items.Add(hora + ":" + min + ":" + seg);
         }
+        int indHorario;
+        for (indHorario = 0; indHorario < lsbHorarios.Rows; indHorario++)
+        {
+            if (lsbHorarios.Items[indHorario].Text == dataAtual.Hour + ":" + dataAtual.Minute + ":" + dataAtual.Second)
+                break;
+        }
+        lsbHorarios.Items[descobrirCodHorario(dataAtual)].Selected = true;
+        rbHora.Checked = false;
+        rbHora.Visible = true;
+        lsbHorarios.Visible = true;
+        lsbMedico.Items[listaMed.FindIndex(x => x.CRM == crmAtual)].Selected = true;
+        lsbMedico.Visible = true;
         rdr.Close();
         Conexao.conexao.Close();
         rdr = null;
+    }
+    private int descobrirCodHorario(DateTime data)
+    {
+        string hora, min, seg;
+        hora = data.Hour.ToString();
+        min = data.Minute.ToString();
+        seg = data.Second.ToString();
+        while (hora.Length < 2)
+            hora = "0" + hora;
+        while (min.Length < 2)
+            min = "0" + min;
+        while (seg.Length < 2)
+            seg = "0" + seg;
+        for(int i = 0; i < lsbHorarios.Items.Count; i++)
+        {
+            if (lsbHorarios.Items[i].Text == (hora + ":" + min + ":" + seg))
+                return i;
+        }
+        throw new Exception("Erro na compatibilidade com os horários e seus códigos na lista") ;
     }
     protected void btnAgendar_Click(object sender, EventArgs e)
     {
@@ -230,14 +296,16 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             string query = "select * from HorarioDispMed_view where " +
             "crm = @crm and YEAR(dataHoraConsulta)=YEAR(@data)" +
             "and MONTH(dataHoraConsulta)= month(@data) " +
-            "and DAY(dataHoraConsulta)= day(@data)";
+            "and DAY(dataHoraConsulta)= day(@data) and not(meiaHora is null)";
             Conexao.conexao.Open();
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Parameters.Add(new SqlParameter("@crm", medAtual.CRM));
             cmd.Parameters.Add(new SqlParameter("@data", DateTime.Parse(txtData.Text)));
+            //cmd.Parameters.Add(new SqlParameter("@data", DatecldData.SelectedDate));
             rdr = cmd.ExecuteReader();
             DateTime dataAtual = DateTime.Parse(txtData.Text);
+            //DateTime dataAtual = cldData.SelectedDate;
             DateTime horarioAtual;
             int indiceHorarioAtual;
             if (rdr.HasRows)
@@ -262,28 +330,26 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                             horarios.RemoveAt(indiceHorarioAtual);
                     }
                 }
-                rdr.Close();
-                rdr = null;
-                Conexao.conexao.Close();
-                string hora, min, seg;
-                foreach (DateTime horario in horarios)
-                {
-                    hora = horario.Hour.ToString();
-                    min = horario.Minute.ToString();
-                    seg = horario.Second.ToString();
-                    while (hora.Length < 2)
-                        hora = "0" + hora;
-                    while (min.Length < 2)
-                        min = "0" + min;
-                    while (seg.Length < 2)
-                        seg = "0" + seg;
-                    lsbHorarios.Items.Add(hora + ":" + min + ":" + seg);
-                }
-                lsbHorarios.Visible = true;
+             
             }
-            else {
-                lblErro.Text = "Não há horários disponíveis para o médico " + medAtual.Nome + " no dia " + txtData.Text;
+            rdr.Close();
+            rdr = null;
+            Conexao.conexao.Close();
+            string hora, min, seg;
+            foreach (DateTime horario in horarios)
+            {
+                hora = horario.Hour.ToString();
+                min = horario.Minute.ToString();
+                seg = horario.Second.ToString();
+                while (hora.Length < 2)
+                    hora = "0" + hora;
+                while (min.Length < 2)
+                    min = "0" + min;
+                while (seg.Length < 2)
+                    seg = "0" + seg;
+                lsbHorarios.Items.Add(hora + ":" + min + ":" + seg);
             }
+            lsbHorarios.Visible = true;
         }
         catch
         {
@@ -350,9 +416,9 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
     {
         int codMedSel = listaMed.Find(x => x.Nome == lsbMedico.Items[lsbMedico.SelectedIndex].Text).CRM;
         
-        string query = "select * from HorarioDispMed_sp" +
+        string query = "select * from HorarioDispMed_view" +
         "where crm = @crm and YEAR(dataHoraConsulta)=YEAR(@data)" +
-        "and MONTH(dataHoraConsulta)= MONTH(@data) and DAY(dataHoraConsulta)= DAY(@data)";
+        "and MONTH(dataHoraConsulta)= MONTH(@data) and DAY(dataHoraConsulta)= DAY(@data) and not(meiaHora is null)";
         Conexao.conexao.Open();
         SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
         cmd.CommandType = System.Data.CommandType.Text;
@@ -406,6 +472,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
     {
         int codMedSel = listaMed.Find(x => x.Nome == lsbMedico.Items[lsbMedico.SelectedIndex].Text).CRM;
         DateTime data = DateTime.Parse(txtData.Text);
+        //DateTime data = cldData.SelectedDate;
         string query = "select * from MarcouMsmDia_view where " +
         "crm=@crm and" +
         "YEAR(dataHoraConsulta)=YEAR(@data)"+
@@ -438,4 +505,43 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         Conexao.conexao.Close();
         return true;
     }
+
+   /* protected void cldData_SelectionChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            DateTime data = cldData.SelectedDate;//Descobrir dia mostrado no calendário
+
+            if (dataValida(data))
+            {
+                for (int i = horarios.Count - 1; i >= 0; i--)
+                    horarios.RemoveAt(i);
+                for (int i = 9; (i < 12 || i >= 14) && i < 18; i++)
+                {// médico trabalha das 9 às 17 e das 12h às 14h tem horário de almoço
+                    horarios.Add(new DateTime(data.Year, data.Month, data.Day, i, 0, 0));
+                    horarios.Add(new DateTime(data.Year, data.Month, data.Day, i, 30, 0));
+                }
+
+                if (podeAgendar())
+                {
+
+                    descobrirHorariosDisponiveis(data);
+                    //ver os horários disponíveis do médico naquela data
+                }//fim do if(podeAgendar())
+                else
+                {
+                    lblErro.Text = "Erro! Este Paciente já marcou consulta com este médico nesta data!";
+                }
+            }//fim do if(dataValida())
+            else
+            {
+                lblErro.Text = ("Selecione uma data futura!");
+
+            }
+        }
+        catch
+        {
+            lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
+        }
+    }*/
 }
