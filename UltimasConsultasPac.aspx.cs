@@ -28,8 +28,8 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
             {
                 Response.Redirect("LogonPac.aspx");
             }
-           /* try
-            {*/
+            try
+            {
             if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
                 string query = "select * from medicosRelPac_view where usuario=@usuario";
@@ -57,7 +57,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr.Close();
                 Conexao.conexao.Close();
                 rdr = null;
-        /*    }
+           }
             catch
             {
                 if(rdr!=null)
@@ -67,14 +67,14 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr = null;
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
 
-            }*/
+            }
         }
     }
 
     protected void btnGeraRelatorio_Click(object sender, EventArgs e)
     {
-        /*try
-        {*/
+        try
+        {
 
             int numero = Convert.ToInt32(txtNumero.Text);
             string nomeMedSel = lsbMedico.Items[lsbMedico.SelectedIndex].Text;
@@ -116,7 +116,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr = null;
                 return;
             }
-       /* }
+        }
         catch
         {
             if (rdr != null)
@@ -125,7 +125,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 Conexao.conexao.Close();
             rdr = null;
             lblErro.Text ="Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
-        }*/
+        }
     }
     private void insereNaMatriz(int codConsulta, DateTime dataHora, string diagnostico)
     {
@@ -148,10 +148,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        /*int numLinhas = tabDados.Rows.Count;
-        for (int i = numLinhas - 1; i >= 0; i++)
-            tabDados.Rows.RemoveAt(i);
-        btnGeraRelatorio_Click(null, null);*/
+        
         Response.Redirect("UltimasConsultasPac.aspx");
     }
 }

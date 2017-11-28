@@ -55,14 +55,15 @@ public partial class UltimasConsultasMed : System.Web.UI.Page
                 lblErro.Text = "Digite o usuário!";
                 return;
             }
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
             Conexao.conexao.Open();
-            string query = "SELECT TOP(@numero)* FROM ultimasConsultas_view" +
-                "WHERE crm=@crm AND usuario=@usuario ORDER BY dataHoraConsuta DESC";
+            string query = "SELECT TOP(@numero) * FROM ultimasConsultas_view " +
+                "WHERE crm = @crm AND usuario = @usuario ORDER BY dataHoraConsulta DESC";
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
-            cmd.Parameters.Add(new SqlParameter("@numero", numero));
-            cmd.Parameters.Add(new SqlParameter("@crm", crmMedOnline));
-            cmd.Parameters.Add(new SqlParameter("@usuario", usuario));
+            cmd.Parameters.AddWithValue("@numero", numero);
+            cmd.Parameters.AddWithValue("@crm", crmMedOnline);
+            cmd.Parameters.AddWithValue("@usuario", usuario);
             rdr = cmd.ExecuteReader();
             if (rdr.HasRows)
             {
@@ -103,21 +104,25 @@ public partial class UltimasConsultasMed : System.Web.UI.Page
     private void insereNaMatriz(int codConsulta, DateTime dataHora, string diagnostico)
     {
         int indLinha = tabDados.Rows.Count;
+        string hora, minuto;
+        hora = dataHora.Hour.ToString();
+        minuto = dataHora.Minute.ToString();
+        while (hora.Length < 2)
+            hora = "0" + hora;
+        while (minuto.Length < 2)
+            minuto = "0" + minuto;
         tabDados.Rows.Add(new TableRow());
         for (int i = 0; i < 4; i++)
             tabDados.Rows[indLinha].Cells.Add(new TableCell());
         tabDados.Rows[indLinha].Cells[0].Text = codConsulta.ToString();
         tabDados.Rows[indLinha].Cells[1].Text = dataHora.Day + "/" + dataHora.Month + "/" + dataHora.Year;
-        tabDados.Rows[indLinha].Cells[2].Text = dataHora.Hour + ":" + dataHora.Minute;
+        tabDados.Rows[indLinha].Cells[2].Text = hora + ":" + minuto;
         tabDados.Rows[indLinha].Cells[3].Text = diagnostico;
     }
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        /*int numLinhas = tabDados.Rows.Count;
-        for (int i = numLinhas - 1; i >= 0; i++)
-            tabDados.Rows.RemoveAt(i);
-        btnGeraRelatorio_Click(null, null);*/
+        
         Response.Redirect("UltimasConsultasMed.aspx");
     }
 }

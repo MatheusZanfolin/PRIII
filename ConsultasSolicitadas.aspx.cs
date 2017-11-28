@@ -82,6 +82,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                     }
                    
                     alterarCampos(listaCons[0].CodConsulta);
+                lsbConsulta.Items[0].Selected = true;
                 }
                 else
                 {
@@ -117,32 +118,32 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         }
         if (i == qtdConsultas)// /*
             throw new Exception("Erro na lista de Consultas!");// */
-        lsbConsulta.Items[i].Selected = true;
+       // lsbConsulta.Items[i].Selected = true;
         int crmAtual = consAtual.Crm;
         Medico medAtual = listaMed.Find(x => x.CRM == crmAtual);
         int j;
         int qtdMedicos = listaMed.Count;
         for (j = 0; j < qtdMedicos; j++)
+            lsbMedico.Items[j].Selected = false;
+        for (j = 0; j < qtdMedicos; j++)
         {
+            
             if (lsbMedico.Items[j].Text == medAtual.Nome)
                 break;
         }
         if (j == qtdMedicos)// /*
             throw new Exception("Erro na lista de Médicos!");// */
-        lsbMedico.Items[j].Selected = true;
+        //lsbMedico.Items[j].Selected = true;
         txtPaciente.Text = listaPac.Find(x => x.Usuario == consAtual.Usuario).Nome;
         int qtdHorarios = lsbHorarios.Rows;
-        if (lsbHorarios.Items.Count>0)
-        {
-            for (int k = qtdHorarios - 1; k >= 0; k--)
-            {
-                lsbHorarios.Items.RemoveAt(k);
-            }
-        }
+        lsbHorarios.ClearSelection();
+        lsbHorarios.Items.Clear();
+        
         DateTime dataAtual = consAtual.DataHoraConsulta;
         //cldData.SelectedDate = dataAtual;
         txtData.Text = dataAtual.Day.ToString() + '/'+ dataAtual.Month.ToString() + '/' + dataAtual.Year.ToString();
- //       rbHora.Checked = false;
+        //       rbHora.Checked = false;
+        horarios.Clear();
         for ( i = 9; (i < 12 || i >= 14) && i < 17; i++)
         {// médico trabalha das 9 às 17 e das 12h às 14h tem horário de almoço
             horarios.Add(new DateTime(dataAtual.Year, dataAtual.Month, dataAtual.Day, i, 0, 0));
@@ -166,6 +167,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         cmd.Parameters.Add(new SqlParameter("@data", dataAtual));
         rdr = cmd.ExecuteReader();
         bool meiaHora = true;
+        
         if (rdr.HasRows)
         {
             int indiceHorarioAtual;
@@ -207,7 +209,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             lsbHorarios.Items.Add(hora + ":" + min + ":" + seg);
         }
         int indHorario;
-        for (indHorario = 0; indHorario < lsbHorarios.Rows; indHorario++)
+        for (indHorario = 0; indHorario < lsbHorarios.Items.Count; indHorario++)
         {
             if (lsbHorarios.Items[indHorario].Text == dataAtual.Hour + ":" + dataAtual.Minute + ":" + dataAtual.Second)
                 break;
@@ -286,7 +288,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
     protected void lsbConsulta_SelectedIndexChanged(object sender, EventArgs e)
     {
         alterarCampos(Convert.ToInt32(lsbConsulta.Items[lsbConsulta.SelectedIndex].Text));
-        
+      
     }
 
     protected void lsbMedico_SelectedIndexChanged(object sender, EventArgs e)
