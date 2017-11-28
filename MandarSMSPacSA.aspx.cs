@@ -12,6 +12,7 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
     SqlDataReader rdr = null;
     //List<string> usuarios = new List<string>();
     string celular = "";
+    string email = "";
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -72,7 +73,7 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
             string query = "";
             string email = "";
             //stored procedure mandar sms paciente
-            query = "select * from MandarSMS_view where usuario=@usuario";
+            query = "select email from Paciente where usuario=@usuario";
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Parameters.Add(new SqlParameter("@usuario", usuario));
@@ -93,12 +94,17 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
 
             rdr = null;
             //enviar SMS
-            objMail.From = new MailAddress("lucasdoiryu@hotmail.com");
-            objMail.Sender = new MailAddress("lucasdoiryu@hotmail.com");
-            objMail.To.Add(email);
-            objMail.Subject = txtMensagem.Text;
-            SmtpClient cliente = new SmtpClient();
-            cliente.Send(objMail);
+            MailMessage mailMessage = new MailMessage ("caratecam@gmail.com", email);
+
+            // tirei o email body
+
+            mailMessage.Subject = txtMensagem.Text;
+
+            
+            SmtpClient smtpClient = new SmtpClient();
+        
+            smtpClient.Send(mailMessage);
+
         }
         catch
         {
@@ -109,5 +115,7 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
             rdr = null;
             lblErro.Text ="Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
         }
+
     }
+
 }
