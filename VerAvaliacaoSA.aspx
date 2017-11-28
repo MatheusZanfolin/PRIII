@@ -31,7 +31,7 @@
 
         </p>
         <p>
-            <asp:ListBox ID="lsbOpcao" runat="server" OnSelectedIndexChanged="lsbOpcao_SelectedIndexChanged">
+            <asp:ListBox ID="lsbOpcao" runat="server" OnSelectedIndexChanged="lsbOpcao_SelectedIndexChanged" AutoPostBack="True">
                 <asp:ListItem>Geral</asp:ListItem>
                 <asp:ListItem>Ver por Especialidade</asp:ListItem>
                 <asp:ListItem>Ver por Médico</asp:ListItem>
@@ -42,19 +42,19 @@
 
         </p>
         <p>
-            <asp:ListBox ID="lsbEspecialidade" runat="server" Enabled="False" OnSelectedIndexChanged="lsbEspecialidade_SelectedIndexChanged"></asp:ListBox>
+            <asp:ListBox ID="lsbEspecialidade" runat="server" Enabled="False" OnSelectedIndexChanged="lsbEspecialidade_SelectedIndexChanged" AutoPostBack="True" Visible="False"></asp:ListBox>
 
             <asp:RequiredFieldValidator ID="rfvEspec" runat="server" ControlToValidate="lsbEspecialidade" ErrorMessage="Selecione a especialidade!"></asp:RequiredFieldValidator>
 
         </p>
         <p>
-            <asp:ListBox ID="lsbMedico" runat="server" Enabled="False" OnSelectedIndexChanged="lsbMedico_SelectedIndexChanged"></asp:ListBox>
+            <asp:ListBox ID="lsbMedico" runat="server" Enabled="False" OnSelectedIndexChanged="lsbMedico_SelectedIndexChanged" AutoPostBack="True" Visible="False"></asp:ListBox>
 
             <asp:RequiredFieldValidator ID="rfvMedico" runat="server" ControlToValidate="lsbMedico" ErrorMessage="Selecione o médico!"></asp:RequiredFieldValidator>
 
         </p>
         <p>
-            <asp:ListBox ID="lsbPaciente" runat="server" Enabled="False" OnSelectedIndexChanged="lsbPaciente_SelectedIndexChanged"></asp:ListBox>
+            <asp:ListBox ID="lsbPaciente" runat="server" Enabled="False" OnSelectedIndexChanged="lsbPaciente_SelectedIndexChanged" AutoPostBack="True" Visible="False"></asp:ListBox>
             <asp:RequiredFieldValidator ID="rfvPac" runat="server" ControlToValidate="lsbPaciente" ErrorMessage="Selecione o Paciente"></asp:RequiredFieldValidator>
             <asp:Table ID="tabDados" runat="server">
             </asp:Table>

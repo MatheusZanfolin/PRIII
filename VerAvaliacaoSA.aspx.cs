@@ -10,9 +10,9 @@ using System.Web.Configuration;
 public partial class VerAvaliacaoSA : System.Web.UI.Page
 {
     private SqlDataReader rdr = null;
-    private List<int> codEspecialidades = new List<int>();//lista com os códigos das especialidades
-    private List<string> usuarios = new List<string> ();//lista com os nomes de usuários dos pacientes
-    private List<int> codMedicos = new List<int> ();//lista com os crm's 
+    private static List<int> codEspecialidades = new List<int>();//lista com os códigos das especialidades
+    private static List<string> usuarios = new List<string> ();//lista com os nomes de usuários dos pacientes
+    private static List<int> codMedicos = new List<int> ();//lista com os crm's 
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
@@ -25,28 +25,17 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
             {
                 Response.Redirect("logonSA.aspx");
             }
-            tabDados.Rows.Add(new TableRow());
-            tabDados.Rows[0].Cells.Add(new TableCell());
-            tabDados.Rows[0].Cells[0].Text = "Data da Consulta";
-
-            tabDados.Rows[0].Cells.Add(new TableCell());
-            tabDados.Rows[0].Cells[1].Text = "Nome do Médico";
-
-            tabDados.Rows[0].Cells.Add(new TableCell());
-            tabDados.Rows[0].Cells[2].Text = "Especialidade";
-
-            tabDados.Rows[0].Cells.Add(new TableCell());
-            tabDados.Rows[0].Cells[3].Text = "Nome do Paciente";
-
-            tabDados.Rows[0].Cells.Add(new TableCell());
-            tabDados.Rows[0].Cells[4].Text = "Avaliação ";
+           
         }
     }
 
     protected void lsbOpcao_SelectedIndexChanged(object sender, EventArgs e)
     {//quando o secretário selecionar uma das opções do listbox
-        try
-        {
+      try
+      {
+        lblErro.Text = "";
+
+        if (Conexao.conexao.State!=System.Data.ConnectionState.Open)
             Conexao.conexao.Open();
             switch (lsbOpcao.SelectedIndex)
             {
@@ -85,10 +74,10 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
             query = "select * from Especialidades_view";
         break;
         case "Medico":
-            query = "select * from selectMed_sp";
+            query = "select * from selectMed_view";
         break;
         case "Paciente":
-            query = "select * from selectPac_sp";
+            query = "select * from selectPac_view";
         break;
        }
                     cmd = new SqlCommand(query, Conexao.conexao);
@@ -128,54 +117,79 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
                     break;
                         }
                     }
+                    lsbMedico.Visible = lsbEspecialidade.Visible = lsbPaciente.Visible = false;
                     switch(opcao){
                     case "Especialidade":
-                    lsbEspecialidade.Enabled = true;
+                    lsbEspecialidade.Enabled = lsbEspecialidade.Visible=true;
+                
                     break;
                     case "Medico":
-                    lsbMedico.Enabled = true;
+                    lsbMedico.Enabled = lsbMedico.Visible=true;
                     break;
                     case "Paciente":
-                    lsbPaciente.Enabled = true;
+                    lsbPaciente.Enabled = lsbPaciente.Visible= true;
                 break;
                 }
     }
     private void popularTodasAvaliacoes()
     {
+        lblErro.Text = "";
         //stored procedure de selecionar todas avaliações
-        string query = "select * from todasAvaliacoes_view";
+        string query = "select * from todasAvaliacoes_view order by dataHoraConsulta desc";
        SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
         cmd.CommandType = System.Data.CommandType.Text;
         rdr = cmd.ExecuteReader();
         if (rdr.HasRows)
         {
             int somatoriaNotas = 0;
-            int qtdeNotas = 0;
+            int qtdeNotas = 1;
             while (rdr.Read())
             {
                 tabDados.Rows.Add(new TableRow());
-                for (int i = 0; i < 5; i++)
+                if (qtdeNotas == 1)
+                {
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[0].Text = "Data da Consulta";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[1].Text = "Nome do Médico";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[2].Text = "Especialidade";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[3].Text = "Nome do Paciente";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[4].Text = "Avaliação";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[5].Text = "Descrição";
+                    tabDados.Rows.Add(new TableRow());
+                }
+                for (int i = 0; i < 6; i++)
                 {//populando a tabela do formulário
-                    tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                    tabDados.Rows[qtdeNotas + 1].Cells[i].Text = rdr.GetValue(i).ToString();
+                    tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                    tabDados.Rows[qtdeNotas].Cells[i].Text = rdr.GetValue(i).ToString();
                     //pegando os valores do BD
                 }
-                somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas + 1].Cells[4].Text);
+                somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas].Cells[4].Text);
                 qtdeNotas++;
 
             }
+             
             tabDados.Rows.Add(new TableRow());
-            tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-            tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "MÉDIA :";
+            tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+            tabDados.Rows[qtdeNotas].Cells[0].Text = qtdeNotas-1 + " Avaliações !";
             //Calculando nota na avaliação pelo usuário média
-            tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-            tabDados.Rows[qtdeNotas + 1].Cells[1].Text = qtdeNotas + " Avaliações !";
-            tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-            tabDados.Rows[qtdeNotas + 1].Cells[2].Text = somatoriaNotas / qtdeNotas + "";
-            tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-            tabDados.Rows[qtdeNotas + 1].Cells[3].Text = "       ";
-            tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-            tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "       ";
+            tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+            tabDados.Rows[qtdeNotas].Cells[1].Text = "MÉDIA :";
+            tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+            tabDados.Rows[qtdeNotas].Cells[2].Text = somatoriaNotas / (qtdeNotas-1) + "";
+            tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+            tabDados.Rows[qtdeNotas].Cells[3].Text = "       ";
+            /*tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+            tabDados.Rows[qtdeNotas].Cells[0].Text = "       ";*/
         }
         else
         {
@@ -186,15 +200,16 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
     protected void lsbEspecialidade_SelectedIndexChanged(object sender, EventArgs e)
     {
         try
-        {
-            
+         {
+        lblErro.Text = "";
+        if (Conexao.conexao.State!=System.Data.ConnectionState.Open)
             Conexao.conexao.Open();
 
             int codEspecSel = lsbEspecialidade.SelectedIndex;
             codEspecSel = codEspecialidades[codEspecSel];
             string query = "";
             //stored procedure para selecionar as avaliações de determinada especialidade
-            query = "select * from avaliacoesEspecialidade_view where codEspecialidade = @codEspecialidade";
+            query = "select * from avaliacoesEspecialidade_view where codEspecialidade = @codEspecialidade order by dataHoraConsulta desc";
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Parameters.Add(new SqlParameter("@codEspecialidade", codEspecSel));
@@ -202,32 +217,52 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
             if (rdr.HasRows)
             {
                 int somatoriaNotas = 0;
-                int qtdeNotas = 0;
-                while (rdr.Read())
-                {
+                int qtdeNotas = 1;
+            while (rdr.Read())
+            {
+                tabDados.Rows.Add(new TableRow());
+                if (qtdeNotas == 1) {
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[0].Text = "Data da Consulta";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[1].Text = "Nome do Médico";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[2].Text = "Especialidade";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[3].Text = "Nome do Paciente";
+
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[4].Text = "Avaliação ";
+                    tabDados.Rows[0].Cells.Add(new TableCell());
+                    tabDados.Rows[0].Cells[5].Text = "Descrição";
                     tabDados.Rows.Add(new TableRow());
-                    for (int i = 0; i < 5; i++)
+                }
+                for (int i = 0; i < 6; i++)
                     {// populando a tabela do formulário
-                        tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                        tabDados.Rows[qtdeNotas + 1].Cells[i].Text = rdr.GetValue(i).ToString();
+                        tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                        tabDados.Rows[qtdeNotas].Cells[i].Text = rdr.GetValue(i).ToString();
                         //pegando os valores do BD
                     }
-                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas + 1].Cells[4].Text);
+                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas].Cells[4].Text);
                     qtdeNotas++;
 
                 }
+                 
                 tabDados.Rows.Add(new TableRow());
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[0].Text = qtdeNotas -1 + " Avaliações !";
                 //Calculando nota na avaliação pelo usuário média
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[1].Text = qtdeNotas + " Avaliações !";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[2].Text = somatoriaNotas / qtdeNotas + "";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[3].Text = "       ";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "       ";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[1].Text ="MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[2].Text = somatoriaNotas / (qtdeNotas-1) + "";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[3].Text = "       ";
+                /*tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[0].Text = "       ";*/
             }
             else
             {
@@ -246,16 +281,17 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
 
     protected void lsbMedico_SelectedIndexChanged(object sender, EventArgs e)
     {
+        lblErro.Text = "";
         try
         {
-            
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
             Conexao.conexao.Open();
 
             int crm = lsbMedico.SelectedIndex;
-            crm = codEspecialidades[crm];
+            crm = codMedicos[crm];
             string query = "";
             //stored procedure para selecionar as avaliações de determinada especialidade
-            query = "select * from avaliacoesMedico_view where crm=@crm";
+            query = "select * from avaliacoesMedico_view where crm=@crm order by dataHoraConsulta desc";
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Parameters.Add(new SqlParameter("@crm", crm));
@@ -263,33 +299,54 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
             if (rdr.HasRows)
             {
                 int somatoriaNotas = 0;
-                int qtdeNotas = 0;
+                int qtdeNotas = 1;
                 while (rdr.Read())
                 {
                     tabDados.Rows.Add(new TableRow());
-                    for (int i = 0; i < 5; i++)
+                    if (qtdeNotas == 1)
+                    {
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[0].Text = "Data da Consulta";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[1].Text = "Nome do Médico";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[2].Text = "Especialidade";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[3].Text = "Nome do Paciente";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[4].Text = "Avaliação ";
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[5].Text = "Descrição";
+                        tabDados.Rows.Add(new TableRow());
+                    }
+                    for (int i = 0; i < 6; i++)
                     {// populando a tabela do formulário
 
-                        tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                        tabDados.Rows[qtdeNotas + 1].Cells[i].Text = rdr.GetValue(i).ToString();
+                        tabDados.Rows[qtdeNotas ].Cells.Add(new TableCell());
+                        tabDados.Rows[qtdeNotas].Cells[i].Text = rdr.GetValue(i).ToString();
                         //pegando os valores do BD
                     }
-                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas + 1].Cells[4].Text);
+                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas].Cells[4].Text);
                     qtdeNotas++;
 
                 }
+                 
                 tabDados.Rows.Add(new TableRow());
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[0].Text = qtdeNotas-1 + " Avaliações !";
                 //Calculando nota na avaliação pelo usuário média
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[1].Text = qtdeNotas + " Avaliações !";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[2].Text = somatoriaNotas / qtdeNotas + "";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[3].Text = "       ";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "       ";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[1].Text ="MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[2].Text = somatoriaNotas /( qtdeNotas -1)+ "";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[3].Text = "       ";
+                //tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                //tabDados.Rows[qtdeNotas].Cells[0].Text = "       ";
             }
             else
             {
@@ -307,16 +364,17 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
 
     protected void lsbPaciente_SelectedIndexChanged(object sender, EventArgs e)
     {
+        lblErro.Text = "";
         try
         {
-            
+            if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
             Conexao.conexao.Open();
 
             int posicao = lsbPaciente.SelectedIndex;
             string usuario = usuarios[posicao];
             string query = "";
             //stored procedure para selecionar as avaliações de determinada especialidade
-            query = "select * from avaliacoesPaciente_view where usuario=@usuario";
+            query = "select * from avaliacoesPaciente_view where usuario=@usuario order by dataHoraConsulta desc";
             SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Parameters.Add(new SqlParameter("@usuario", usuario));
@@ -324,33 +382,54 @@ public partial class VerAvaliacaoSA : System.Web.UI.Page
             if (rdr.HasRows)
             {
                 int somatoriaNotas = 0;
-                int qtdeNotas = 0;
+                int qtdeNotas = 1;
                 while (rdr.Read())
                 {
                     tabDados.Rows.Add(new TableRow());
-                    for (int i = 0; i < 5; i++)
+                    if (qtdeNotas == 1)
+                    {
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[0].Text = "Data da Consulta";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[1].Text = "Nome do Médico";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[2].Text = "Especialidade";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[3].Text = "Nome do Paciente";
+
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[4].Text = "Avaliação ";
+                        tabDados.Rows[0].Cells.Add(new TableCell());
+                        tabDados.Rows[0].Cells[5].Text = "Descrição";
+                        tabDados.Rows.Add(new TableRow());
+                    }
+                    for (int i = 0; i < 6; i++)
                     {// populando a tabela do formulário
 
-                        tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                        tabDados.Rows[qtdeNotas + 1].Cells[i].Text = rdr.GetValue(i).ToString();
+                        tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                        tabDados.Rows[qtdeNotas ].Cells[i].Text = rdr.GetValue(i).ToString();
                         //pegando os valores do BD
                     }
-                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas + 1].Cells[4].Text);
+                    somatoriaNotas += Convert.ToInt32(tabDados.Rows[qtdeNotas].Cells[4].Text);
                     qtdeNotas++;
 
                 }
+                 
                 tabDados.Rows.Add(new TableRow());
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[0].Text = qtdeNotas -1 + " Avaliações !";
                 //Calculando nota na avaliação pelo usuário média
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[1].Text = qtdeNotas + " Avaliações !";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[2].Text = somatoriaNotas / qtdeNotas + "";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[3].Text = "       ";
-                tabDados.Rows[qtdeNotas + 1].Cells.Add(new TableCell());
-                tabDados.Rows[qtdeNotas + 1].Cells[0].Text = "       ";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[1].Text ="MÉDIA :";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[2].Text = somatoriaNotas / (qtdeNotas -1)+ "";
+                tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[3].Text = "       ";
+                /*tabDados.Rows[qtdeNotas].Cells.Add(new TableCell());
+                tabDados.Rows[qtdeNotas].Cells[0].Text = "       ";*/
             }
             else
             {
