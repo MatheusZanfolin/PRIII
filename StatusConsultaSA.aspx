@@ -9,7 +9,7 @@
                 <asp:MenuItem Text="Cadastrar Médico" Value="Cadastrar Médico" NavigateUrl="~/CadMedSa.aspx"></asp:MenuItem>
                 <asp:MenuItem Text="Paciente" Value="Paciente">
                     <asp:MenuItem Text="Cadastrar" Value="Cadastrar" NavigateUrl="~/CadPacienteSA.aspx"></asp:MenuItem>
-                    <asp:MenuItem Text="Mandar SMS" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Mandar e-mail" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Visualizar avaliações" Value="Visualizar avaliações" NavigateUrl="~/VerAvaliacaoSA.aspx"></asp:MenuItem>
                 </asp:MenuItem>
                 <asp:MenuItem Text="Cadastrar Especialidade" Value="Cadastrar Especialidade" NavigateUrl="~/especialidadeSA.aspx"></asp:MenuItem>
@@ -22,6 +22,7 @@
                 <asp:MenuItem NavigateUrl="~/CadSA.aspx" Text="Cadastrar outro Secretário" Value="Cadastrar outro Secretário"></asp:MenuItem>
                 <asp:MenuItem NavigateUrl="~/logonSA.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>
         
             <h1>Ver Status das Consultas
@@ -38,8 +39,6 @@
         &nbsp;<asp:RequiredFieldValidator ID="rfvDia" runat="server" ControlToValidate="txtData" ErrorMessage="Digite o dia das consultas!"></asp:RequiredFieldValidator>
         </p>
         <p>
-            &nbsp;</p>
-        <p>
             <asp:Table ID="tabDados" runat="server" CellPadding="5">
             </asp:Table>
         </p>
@@ -47,8 +46,6 @@
             <asp:Label ID="lblNum" runat="server" Text="Número de Consultas:" Visible="False"></asp:Label>
             <asp:Label ID="lblConsulta" runat="server" Visible="False"></asp:Label>
         </p>
-        <p>
-            &nbsp;</p>
        <p>
             <asp:Label ID="Label3" runat="server" Text="Código da consulta para cancelar:"></asp:Label>
             <asp:TextBox ID="txtAlterarConsulta" runat="server" TextMode="Number"></asp:TextBox>
@@ -58,7 +55,7 @@
         </p>
         <p>
         
-            <asp:Button ID="btnRedefinir" runat="server" OnClick="btnRedefinir_Click" Text="Escolher outro dia" OnClientClick="return false;"/>
+            <asp:Button ID="btnRedefinir" runat="server" OnClick="btnRedefinir_Click" Text="Escolher outro dia" OnClientClick="return false;" Visible="False"/>
         
     </p>
 

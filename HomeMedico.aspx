@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
          <h1> Bem Vindo, ao Sistema, Médico! </h1>
 
-         <asp:Menu ID="menuMed" runat="server" Orientation="Horizontal">
+         <asp:Menu ID="menuMed" runat="server" OnMenuItemClick="menuMed_MenuItemClick" BackColor="White">
              <Items>
                  <asp:MenuItem Text="Paciente" Value="Paciente">
                      <asp:MenuItem NavigateUrl="~/CadDiagnosticoMed.aspx" Text="Cadastrar Diagnóstico" Value="Cadastrar Diagnóstico"></asp:MenuItem>
@@ -13,5 +13,6 @@
                  <asp:MenuItem NavigateUrl="~/MedicaoEstatisticas.aspx" Text="Estatísticas" Value="Estatísticas"></asp:MenuItem>
                  <asp:MenuItem NavigateUrl="~/LogonMedico.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
              </Items>
+             <StaticMenuItemStyle VerticalPadding="5px" />
          </asp:Menu>         
 </asp:Content>

@@ -19,6 +19,8 @@ public partial class AgendarConsulta : System.Web.UI.Page
     static string hora, min, seg;
     protected void Page_Load(object sender, EventArgs e)
     {
+        lblErro.Text = string.Empty;
+
         if (!IsPostBack)
         {
             try
@@ -80,6 +82,9 @@ public partial class AgendarConsulta : System.Web.UI.Page
             if (lsbEspec.SelectedIndex <= 0)
             {
                 lblErro.Text = "Selecione uma especialidade!";
+
+                lsbMedico.Visible = txtData.Visible = txtPaciente.Visible = lsbHorarios.Visible = false;
+
                 return;
             }
 
@@ -92,6 +97,7 @@ public partial class AgendarConsulta : System.Web.UI.Page
             if (rdr.HasRows)
             {
                 medicos.Clear();
+                lsbMedico.Items.Clear();
 
                 while (rdr.Read())
                 {
@@ -129,13 +135,6 @@ public partial class AgendarConsulta : System.Web.UI.Page
     {//evento do nome do médico for selecionado
         string nomeMedSel = lsbMedico.SelectedItem.Text;
 
-        if (lsbMedico.SelectedIndex <= 0)
-        {
-            lblErro.Text = "Selecione um médico!";
-
-            return;
-        }
-
         codMedSel = medicos.Find(x => x.Nome == nomeMedSel).CRM;//codigo do medico selecionado
         txtData.Visible = true;
         txtPaciente.Visible = true;
@@ -144,7 +143,9 @@ public partial class AgendarConsulta : System.Web.UI.Page
           string query = "select * from HorarioDispMed_view " +
             "where crm=@crm and YEAR(dataHoraConsulta)=YEAR(@data)"+
             "and MONTH(dataHoraConsulta)= MONTH(@data) " +
-            "and DAY(dataHoraConsulta)= DAY(@data)";
+            "and DAY(dataHoraConsulta)= DAY(@data)" +
+            "and NOT (meiaHora IS NULL)";
+
             if (Conexao.conexao.State != System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
                     SqlCommand cmd = new SqlCommand(query, Conexao.conexao);
@@ -161,8 +162,9 @@ public partial class AgendarConsulta : System.Web.UI.Page
                         int indiceHorarioAtual;
                         while (rdr.Read())
                         {
-                            horarioAtual = (DateTime)rdr.GetValue(0);
-                            meiaHora = (bool)rdr.GetValue(1);
+                            horarioAtual = DateTime.Parse(rdr["dataHoraConsulta"].ToString());
+                            meiaHora = rdr.GetBoolean(1);
+
                             if (horarios.Exists(x => x.Equals(horarioAtual)))//se em um dos horários 
                             {                                                //já está marcada outra consulta
                                 indiceHorarioAtual = horarios.FindIndex(x => x.Equals(horarioAtual));
@@ -267,6 +269,8 @@ public partial class AgendarConsulta : System.Web.UI.Page
                     lblErro.Text = "Sucesso ao agendar!";
 
                     lblErro.ForeColor = System.Drawing.Color.Green;
+
+                    LimparTela();
                 }
                     
 
@@ -286,7 +290,19 @@ public partial class AgendarConsulta : System.Web.UI.Page
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
         }
     }
-    
+
+    private void LimparTela()
+    {
+        txtPaciente.Text = txtData.Text = string.Empty;
+
+        lsbMedico.Visible = txtPaciente.Visible = txtData.Visible = lsbHorarios.Visible = rbHora.Visible = rbHora.Checked = false;
+
+        lsbMedico  .Items.Clear();
+        lsbHorarios.Items.Clear();
+
+        lsbEspec.SelectedIndex = 0;
+    }
+
     private bool dataValida(DateTime data){// A data só é válida se não for em um dia passado
         return data.CompareTo(DateTime.Now) >= 0;
 }
@@ -295,14 +311,14 @@ public partial class AgendarConsulta : System.Web.UI.Page
     protected void txtData_TextChanged(object sender, EventArgs e)
     {
         //data foi selecionada
-        try
-        {
+        //try
+        //{
             lsbHorarios.Visible = true;
 
             data = DateTime.Parse(txtData.Text);//Descobrir dia mostrado no calendário
 
-            if (dataValida(data))
-            {
+            //if (dataValida(data))
+            //{
                 horarios.Clear();
 
                 for (int i = 9; (i < 12 || i >= 14) && i < 17; i++)
@@ -326,13 +342,13 @@ public partial class AgendarConsulta : System.Web.UI.Page
                 {
                     lblErro.Text = "Erro! Este Paciente já marcou consulta com este médico nesta data!";
                 }
-            }//fim do if(dataValida())
+            /*}//fim do if(dataValida())
             else
             {
                 lblErro.Text = ("Selecione uma data futura!");
 
-            }
-        }
+            }*/
+        /*}
         catch
         {
             if (rdr != null)
@@ -341,11 +357,14 @@ public partial class AgendarConsulta : System.Web.UI.Page
                 Conexao.conexao.Close();
             rdr = null;
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
-        }
+        }*/
     }
 
     protected void lsbHorarios_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (!lsbHorarios.Visible)
+            return;
+
         var podeMarcarConsultaLonga = EhPossivelMarcarUmaHora();
 
         if (!podeMarcarConsultaLonga)

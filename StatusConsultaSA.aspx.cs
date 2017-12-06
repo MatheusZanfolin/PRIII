@@ -13,7 +13,7 @@ public partial class StatusConsultaSA : System.Web.UI.Page
 {//default(classes e structs) é private, por isso não coloquei
     SqlDataReader rdr;
     int numeroDeConsultas=0;
-    /*
+    
     List<Medico> medicos = new List<Medico>();//Lista de médicos
     int crmSel;//INFORMAÇÕES DA CONSULTA SELECIONADA
     //string usuario;
@@ -265,7 +265,7 @@ public partial class StatusConsultaSA : System.Web.UI.Page
                 while (rdr.Read())
                 {
                     numeroDeConsultas++;
-                    insereNaMatriz((DateTime)rdr.GetValue(0), (bool)rdr.GetValue(1), Convert.ToInt32(rdr.GetValue(2)),
+                    insereNaMatriz(DateTime.Parse(rdr.GetValue(0).ToString()), rdr.GetBoolean(1), Convert.ToInt32(rdr.GetValue(2)),
                         Convert.ToInt32(rdr.GetValue(3)), rdr.GetValue(4).ToString(), rdr.GetValue(5).ToString(), rdr.GetValue(6).ToString());
                 }
             }
@@ -306,7 +306,10 @@ public partial class StatusConsultaSA : System.Web.UI.Page
             }
 
             int codConsultaAlterar = Convert.ToInt32(txtAlterarConsulta.Text);
-            Conexao.conexao.Open();
+
+            if (Conexao.conexao.State != ConnectionState.Open)
+                Conexao.conexao.Open();
+
             string update = "alterarStatus_sp";
             SqlCommand cmd = new SqlCommand(update, Conexao.conexao);
             cmd.CommandType =CommandType.StoredProcedure;
@@ -324,6 +327,8 @@ public partial class StatusConsultaSA : System.Web.UI.Page
                 lblErro.Text = "Sucesso ao cancelar a consulta de código "+codConsultaAlterar+" !";
 
                 lblErro.ForeColor = System.Drawing.Color.Green;
+
+                lblConsulta.Text = (Convert.ToInt32(lblConsulta.Text) - 1).ToString();
             }
             else
             {

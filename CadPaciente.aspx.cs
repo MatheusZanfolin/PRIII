@@ -32,6 +32,8 @@ public partial class CadPaciente : System.Web.UI.Page
                 lblErro.Text = "Cadastro realizado com sucesso!";
 
                 lblErro.ForeColor = System.Drawing.Color.Green;
+
+                LimparTela();
             }                
             else
                 lblErro.Text = "Verifique os dados e tente novamente!";
@@ -43,6 +45,12 @@ public partial class CadPaciente : System.Web.UI.Page
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Tente novamente mais tarde!";
         } 
     }
+
+    private void LimparTela()
+    {
+        txtCelular.Text = txtEmail.Text = txtEndereco.Text = txtNascimento.Text = txtNome.Text = txtSenha.Text = txtTelefone.Text = txtUsuario.Text = string.Empty;
+    }
+
     private bool DataValida(DateTime data)
     {
         DateTime dataAtual = DateTime.Now;
@@ -54,7 +62,8 @@ public partial class CadPaciente : System.Web.UI.Page
     }
     private void RegistrarPacienteNoBanco()
     {
-        Conexao.conexao.Open();
+        if (Conexao.conexao.State != ConnectionState.Open)
+            Conexao.conexao.Open();
 
         string caminho = SalvarFoto();
 

@@ -66,11 +66,19 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
                 rdr = null;
 
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Tente novamente mais tarde!";
+
+                FormatarErro();
             }
         }
     }
 
-    
+    private void FormatarErro()
+    {
+        lblErro.ForeColor = System.Drawing.Color.Red;
+
+        lblErro.Font.Underline = true;
+    }
+
     private void InsereNaMatriz(DateTime horario, bool meiaHora, int codConsulta, string nomePac)
     {
         int indiceColuna = -1;
@@ -116,6 +124,9 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
             if (numero <= 0)
             {
                 lblErro.Text = "Digite um número de dias positivo!";
+
+                FormatarErro();
+
                 return;
             }
             string query = "select * from agendaMed_view where crm = @crm and dataHoraConsulta >= getdate() and dataHoraConsulta <= DATEADD(DAY, @dias, getdate())";
@@ -128,43 +139,7 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
             
             if (rdr.HasRows)
             {
-                /**
-                for (int dia = 0; dia < 7; dia++)
-                {
-                    if (dia == 0)
-                        tabDados.Rows.Add(new TableRow());
-                    tabDados.Rows[0].Cells.Add(new TableCell());
-                
-                    int hora = 18;
-                    for (int i = 1; i < 13; i++)
-                    {
-                        if (dia == 0)
-                            tabDados.Rows.Add(new TableRow());
-                        tabDados.Rows[i].Cells.Add(new TableCell());
-                        tabDados.Rows[i].Cells[2 * dia].Text = hora / 2 + "h";
-                        if (hora % 2 != 0)
-                        {
-                            tabDados.Rows[i].Cells[2 * dia].Text += "30 - " + (hora + 1) / 2 + "h00";
-                        }
-                        else
-                        {
-                            tabDados.Rows[i].Cells[2 * dia].Text += "00 - " + (hora / 2) + "h30";
-                        }
-                        hora++;
-                        if (hora == 24)
-                            hora = 28;
-                    }
-                
-                    for (int i = 0; i < 13; i++)
-                    {
-                        tabDados.Rows[i].Cells.Add(new TableCell());
-                        if (i == 0)
-                            tabDados.Rows[i].Cells[2 * dia + 1].Text = "Médico: " + nomeMedOnline + " CRM: " + crmMedOnline;
-                        if (i == 1)
-                            tabDados.Rows[i].Cells[2 * dia + 1].Text = "Código da Consulta / Nome do Paciente: ";
-                    }
-                }//fim do for(int dia=0;dia<7;dia++)
-                **/
+               
 
                 GerarTabela(numero);
 
@@ -173,7 +148,7 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
                 {
 
 
-                    InsereNaMatriz(DateTime.Parse(rdr["dataHoraConsulta"].ToString()), (bool)rdr["meiaHora"], Convert.ToInt32(rdr["codConsulta"]),
+                    InsereNaMatriz(DateTime.Parse(rdr["dataHoraConsulta"].ToString()), Convert.ToBoolean(rdr["meiaHora"]), Convert.ToInt32(rdr["codConsulta"]),
                                     rdr["usuario"].ToString());
                     numeroDeConsultas++;
 
@@ -186,6 +161,10 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
                 lblConsulta.Text = string.Empty;
 
                 lblErro.Text = "Não há nenhuma consulta marcada nesta semana!";
+
+                lblErro.ForeColor = System.Drawing.Color.Black;
+
+                lblErro.Font.Underline = false;
             }
 
             rdr.Close();
@@ -202,6 +181,7 @@ public partial class ConsultarAgendaMed : System.Web.UI.Page
             rdr = null;
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
 
+            FormatarErro();
         }
     }
 

@@ -76,11 +76,17 @@ public partial class CadMed : System.Web.UI.Page
         }
     }
 
+    private void LimparTela()
+    {
+        txtCelular.Text = txtCRM.Text = txtDataNasc.Text = txtEmail.Text = txtNome.Text = txtSenha.Text = txtTelefone.Text = string.Empty;
+    }
+
     private void TravarTela()
     {
         txtCelular.Enabled = txtCRM.Enabled = txtDataNasc.Enabled = txtEmail.Enabled = txtNome.Enabled = txtSenha.Enabled = txtTelefone.Enabled = lsbEspec.Enabled = fupFoto.Enabled = false;
         txtCelular.BackColor = txtCRM.BackColor = txtDataNasc.BackColor = txtEmail.BackColor = txtNome.BackColor = txtSenha.BackColor = txtTelefone.BackColor = lsbEspec.BackColor = TXT_VAZIO;
-        txtCelular.Text = txtCRM.Text = txtDataNasc.Text = txtEmail.Text = txtNome.Text = txtSenha.Text = txtTelefone.Text = string.Empty;
+
+        TravarTela();
     }
 
     protected void btnCadastrar_Click(object sender, EventArgs e)
@@ -136,6 +142,8 @@ public partial class CadMed : System.Web.UI.Page
                 lblErro.Text = "Sucesso no cadastro do médico " + nome + "!";
 
                 lblErro.ForeColor = System.Drawing.Color.Green;
+
+                LimparTela();
             }
             
 

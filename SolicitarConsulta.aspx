@@ -17,6 +17,7 @@
                     
                 
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>    
 
 
@@ -34,7 +35,7 @@
             </tr>
             <tr>
                 <td><asp:Label ID="Label3" runat="server" Text="Dia:"></asp:Label></td>
-                <td><asp:TextBox ID="txtData" runat="server" OnTextChanged="txtData_TextChanged" TextMode="Date" AutoPostBack="True"></asp:TextBox> <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ValidationGroup="txtData" ControlToValidate="txtData"></asp:RequiredFieldValidator></td>
+                <td><asp:TextBox ID="txtData" runat="server" OnTextChanged="txtData_TextChanged" TextMode="Date" AutoPostBack="True" Visible="False"></asp:TextBox> <asp:RequiredFieldValidator ID="rfvData" runat="server" ErrorMessage="Selecione um dia!" ValidationGroup="txtData" ControlToValidate="txtData"></asp:RequiredFieldValidator></td>
             </tr>
             <tr>
                 <td><asp:Label ID="Label4" runat="server" Text="Horários Disponíveis:"></asp:Label></td>

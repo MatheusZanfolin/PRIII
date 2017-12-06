@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Web.Configuration;
+using System.Drawing;
 
 public partial class ConsultasSolicitadas : System.Web.UI.Page
 {//default(classes) é private, por isso não coloquei
@@ -16,6 +17,8 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
     static List<DateTime> horarios = new List<DateTime>();//lista de horários
     protected void Page_Load(object sender, EventArgs e)
     {
+        lblErro.Text = string.Empty;
+
         if (!IsPostBack)
         {
             try
@@ -27,8 +30,8 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             {
                 Response.Redirect("logonSA.aspx");
             }
-            /*try
-            {*/
+            try
+            {
             //cldData.SelectionMode = CalendarSelectionMode.Day;
             if (Conexao.conexao.State != System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
@@ -81,19 +84,21 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                         lsbConsulta.Items.Add(listaCons[i].CodConsulta.ToString());
                     }
                    
-                    alterarCampos(listaCons[0].CodConsulta);
+                    AlterarCampos(listaCons[0].CodConsulta);
                 lsbConsulta.Items[0].Selected = true;
                 }
                 else
                 {
                     lblErro.Text = "Não há nenhuma consulta solicitada!";
+
+                    lblErro.ForeColor = Color.Red;
                 }
                 if(rdr!=null)
                     rdr.Close();
                 rdr = null;
             if(Conexao.conexao.State!=System.Data.ConnectionState.Closed)
             Conexao.conexao.Close();
-           /* }
+            }
             catch
             {
                 if (rdr != null)
@@ -103,10 +108,10 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                 rdr = null;
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
 
-          //  }*/
+            }
         }
     }
-    private void alterarCampos(int codConsulta)
+    private void AlterarCampos(int codConsulta)
     {
         Consulta consAtual = listaCons.Find(x => x.CodConsulta== codConsulta);
         int qtdConsultas = listaCons.Count;
@@ -214,7 +219,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             if (lsbHorarios.Items[indHorario].Text == dataAtual.Hour + ":" + dataAtual.Minute + ":" + dataAtual.Second)
                 break;
         }
-        lsbHorarios.Items[descobrirCodHorario(dataAtual)].Selected = true;
+        lsbHorarios.Items[DescobrirCodHorario(dataAtual)].Selected = true;
         rbHora.Checked = false;
         rbHora.Visible = true;
         lsbHorarios.Visible = true;
@@ -224,7 +229,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         Conexao.conexao.Close();
         rdr = null;
     }
-    private int descobrirCodHorario(DateTime data)
+    private int DescobrirCodHorario(DateTime data)
     {
         string hora, min, seg;
         hora = data.Hour.ToString();
@@ -253,10 +258,13 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
             (x.Hour == Convert.ToInt32(horarioSel.Substring(0, 2))) &&
             (x.Minute == Convert.ToInt32(horarioSel.Substring(3, 2))) &&
             (x.Second == Convert.ToInt32(horarioSel.Substring(6, 2))));
-            if (dataValida(dataSel))
+            if (DataValida(dataSel))
             {
                 bool meiaHora = !rbHora.Checked;
-                Conexao.conexao.Open();
+
+                if (Conexao.conexao.State != System.Data.ConnectionState.Open)
+                    Conexao.conexao.Open();
+
                 string update = "AlterarConsultaSolicitar_sp";
                 SqlCommand cmd = new SqlCommand(update, Conexao.conexao);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -266,12 +274,32 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                 cmd.Parameters.Add( new SqlParameter ("@crm",crm));
                 int linhasAlteradas = cmd.ExecuteNonQuery();
 
+                lblErro.ForeColor = Color.Red;
+
                 if(linhasAlteradas == 1)
-                    lblErro.Text = "Alteração da consulta de código "+codConsulta+" feita com sucesso!";
+                {
+                    lblErro.Text = "Alteração da consulta de código " + codConsulta + " feita com sucesso!";
+
+                    lblErro.ForeColor = Color.Green;
+
+                    lsbConsulta.Items.RemoveAt(lsbConsulta.SelectedIndex);
+
+                    if (lsbConsulta.Items.Count > 0)
+                    {
+                        lsbConsulta.SelectedIndex = 0;
+
+                        AlterarCampos(Convert.ToInt32(lsbConsulta.SelectedItem.Text));
+                    }
+                    else
+                        LimparTela();
+                }                    
+
                 if (linhasAlteradas < 1)
                     lblErro.Text = "Verifique os dados e tente novamente!";
+
                 if (linhasAlteradas > 1)
                     lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema !";
+
                 Conexao.conexao.Close();
             }
             else
@@ -285,10 +313,20 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         }
     }
 
+    private void LimparTela()
+    {
+        lsbConsulta.Items.Clear();
+        lsbHorarios.Items.Clear();
+        lsbMedico  .Items.Clear();
+
+        txtData.Text = txtPaciente.Text = string.Empty;
+
+        rbHora.Visible = false;
+    }
+
     protected void lsbConsulta_SelectedIndexChanged(object sender, EventArgs e)
     {
-        alterarCampos(Convert.ToInt32(lsbConsulta.Items[lsbConsulta.SelectedIndex].Text));
-      
+        AlterarCampos(Convert.ToInt32(lsbConsulta.Items[lsbConsulta.SelectedIndex].Text));      
     }
 
     protected void lsbMedico_SelectedIndexChanged(object sender, EventArgs e)
@@ -361,17 +399,14 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                 Conexao.conexao.Close();
             rdr = null;
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
+
+            lblErro.ForeColor = Color.Red;
         }
     }
-    private bool dataValida(DateTime data)
+    private bool DataValida(DateTime data)
     {// A DATA SÓ É VÁLIDA SE NÃO FOR NUM DIA PASSADO
-        if (data.Year < DateTime.Now.Year)
-            return false;
-        if (data.Month < DateTime.Now.Month)
-            return false;
-        if (data.Day < DateTime.Now.Day)
-            return false;
-        return true;
+      
+        return data.CompareTo(DateTime.Now) >= 0;
     }
 
 
@@ -381,7 +416,7 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
         {
            DateTime data = DateTime.Parse(txtData.Text);//Descobrir dia mostrado no calendário
 
-            if (dataValida(data))
+            if (DataValida(data))
             {
                 for (int i = horarios.Count - 1; i >= 0; i--)
                     horarios.RemoveAt(i);
@@ -400,12 +435,15 @@ public partial class ConsultasSolicitadas : System.Web.UI.Page
                 else
                 {
                     lblErro.Text = "Erro! Este Paciente já marcou consulta com este médico nesta data!";
+
+                    lblErro.ForeColor = Color.Red;
                 }
             }//fim do if(dataValida())
             else
             {
-                lblErro.Text = ("Selecione uma data futura!");
+                lblErro.Text = "Selecione uma data futura!";
 
+                lblErro.ForeColor = Color.Red;
             }
         }
         catch

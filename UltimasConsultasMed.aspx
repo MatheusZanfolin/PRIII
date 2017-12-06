@@ -18,6 +18,7 @@
                  <asp:MenuItem NavigateUrl="~/MedicaoEstatisticas.aspx" Text="Estatísticas" Value="Estatísticas"></asp:MenuItem>
                  <asp:MenuItem NavigateUrl="~/LogonMedico.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
              </Items>
+             <StaticMenuItemStyle HorizontalPadding="10px" />
          </asp:Menu>         
         </h1>
         <h1>Últimas Consultas do Médico com Determinado Paciente</h1>

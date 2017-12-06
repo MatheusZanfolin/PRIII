@@ -19,32 +19,41 @@
                     
                 
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>    
 
     <br /><h1>
         Últimas Consultas do Paciente com Determinado Médico</h1>
         <p>
         <asp:Label ID="lblErro" runat="server" Font-Bold="False" Font-Names="Times New Roman" Font-Overline="False" Font-Size="20pt" Font-Underline="True" ForeColor="Red"></asp:Label>
-        </p>
-        <p>
+            <table>
+                <tr>
+                    <td>
             
             <asp:Label ID="Label3" runat="server" Text="Escolha o médico:"></asp:Label>
+                    </td>
+                    <td>
             <asp:ListBox ID="lsbMedico" runat="server"></asp:ListBox>
             
             <asp:RequiredFieldValidator ID="rfvMedico" runat="server" ControlToValidate="lsbMedico" ErrorMessage="Selecione o médico!"></asp:RequiredFieldValidator>
             
-        </p>
-        <p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
             <asp:Label ID="Label2" runat="server" Text="Número de consultas para mostrar:"></asp:Label>
+                    </td>
+                    <td>
             <asp:TextBox ID="txtNumero" runat="server" TextMode="Number"></asp:TextBox>
             <asp:RequiredFieldValidator ID="rfvNumero" runat="server" ControlToValidate="txtNumero" ErrorMessage="Digite o número de consultas!"></asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+            </table>
         </p>
         <p>
             <asp:Table ID="tabDados" runat="server">
             </asp:Table>
         </p>
-        <p>
-            &nbsp;</p>
         
         <p>
             <asp:Button ID="btnGeraRelatorio" runat="server" Text="Gerar Relatório" OnClick="btnGeraRelatorio_Click" />

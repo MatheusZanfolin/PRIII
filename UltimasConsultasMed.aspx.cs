@@ -122,7 +122,10 @@ public partial class UltimasConsultasMed : System.Web.UI.Page
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        
+        /*int numLinhas = tabDados.Rows.Count;
+        for (int i = numLinhas - 1; i >= 0; i++)
+            tabDados.Rows.RemoveAt(i);
+        btnGeraRelatorio_Click(null, null);*/
         Response.Redirect("UltimasConsultasMed.aspx");
     }
 }

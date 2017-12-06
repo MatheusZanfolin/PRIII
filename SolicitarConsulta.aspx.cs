@@ -85,6 +85,9 @@ public partial class SolicitarConsulta : System.Web.UI.Page
 
             cmd.Parameters.AddWithValue("@codEspec", codEspecSel);
             rdr = cmd.ExecuteReader();
+
+            lsbMedico.Items.Clear();
+
             if (rdr.HasRows)
             {
                 while (rdr.Read())
@@ -93,6 +96,7 @@ public partial class SolicitarConsulta : System.Web.UI.Page
                     lsbMedico.Items.Add(medicos.Last().Nome);//adicionando os nomes dos medicos no listbox 
                 }
                 lsbMedico.Visible = true;
+                txtData.Visible = lsbHorarios.Visible = false;
             }
             else
             {
@@ -112,6 +116,7 @@ public partial class SolicitarConsulta : System.Web.UI.Page
         string nomeMedSel = lsbMedico.Items[lsbMedico.SelectedIndex].Value;
         codMedSel = medicos.Find(x => x.Nome == nomeMedSel).CRM;//codigo do medico selecionado
         txtData.Visible = true;
+        lsbHorarios.Visible = false;
     }
     private void descobrirHorariosDisponiveis(DateTime data)
     {

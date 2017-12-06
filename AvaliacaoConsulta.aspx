@@ -14,6 +14,7 @@
                     
                 
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>    
 
     <br />

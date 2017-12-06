@@ -58,10 +58,11 @@ public partial class CadPacienteSA : System.Web.UI.Page
 
         usuariosPendentes = new UsuarioPendente[quantasPendencias];
 
-        if(Conexao.conexao==null)
+        if (Conexao.conexao==null)
             Conexao.conexao = new SqlConnection(Conexao.stringDeConexao);
 
-        Conexao.conexao.Open();
+        if (Conexao.conexao.State != ConnectionState.Open)
+            Conexao.conexao.Open();
 
         var query = "SELECT * FROM dadosPendentes_view";
 
@@ -90,10 +91,12 @@ public partial class CadPacienteSA : System.Web.UI.Page
     private int QuantasPendencias()
     {
         int quantasPendencias = 0;
+
         if(Conexao.conexao==null)
             Conexao.conexao = new SqlConnection(Conexao.stringDeConexao);
 
-        Conexao.conexao.Open();
+        if (Conexao.conexao.State != ConnectionState.Open)
+            Conexao.conexao.Open();
 
         var query = "SELECT COUNT(*) FROM dadosPendentes_view";
 
@@ -134,6 +137,9 @@ public partial class CadPacienteSA : System.Web.UI.Page
 
     private void RemoverPendencia(int indice)
     {
+        if (usuariosPendentes == null)
+            return;
+
         for (int i = indice; i < usuariosPendentes.Length - 1; i++)
             usuariosPendentes[i] = usuariosPendentes[i + 1];
 
@@ -164,6 +170,8 @@ public partial class CadPacienteSA : System.Web.UI.Page
             return;
 
         DefinirPendenciaComo(false);
+
+        txtComentarios.Text = string.Empty;
     }
 
     private void DefinirPendenciaComo(bool aceita)
@@ -216,6 +224,8 @@ public partial class CadPacienteSA : System.Web.UI.Page
 
     private void TravarTela()
     {
+        ddlPendentes.Items.Clear();
+
         txtEndereco.BackColor   = TXT_VAZIO;
         txtEmail.BackColor      = TXT_VAZIO;
         txtNascimento.BackColor = TXT_VAZIO;
@@ -239,9 +249,9 @@ public partial class CadPacienteSA : System.Web.UI.Page
 
         if (string.IsNullOrEmpty(txtComentarios.Text))
         {
-            btnIndeferir.Enabled = false;
-
             btnDeferir.Enabled = true;
+
+            btnIndeferir.Enabled = false;            
         }            
         else
         {

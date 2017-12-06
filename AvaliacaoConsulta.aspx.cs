@@ -111,6 +111,8 @@ public partial class AvaliacaoConsulta : System.Web.UI.Page
             {
                 lblMensagem.Text = "Avaliação cadastrada com sucesso!";
                 lblMensagem.ForeColor = System.Drawing.Color.Green;
+
+                txtNota.Text = txtComentario.Text = string.Empty;
             }
 
             AtualizarConsultas();

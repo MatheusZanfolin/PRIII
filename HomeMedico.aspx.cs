@@ -27,5 +27,11 @@ public partial class HomeMedico : System.Web.UI.Page
         }
     }
 
-    
+
+
+    protected void menuMed_MenuItemClick(object sender, MenuEventArgs e)
+    {
+        if (e.Item.Text.ToUpper() == "LOGOUT")
+            Request.QueryString["logout"] = "true";
+    }
 }

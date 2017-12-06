@@ -4,14 +4,12 @@
 <asp:Content ID="ContentLogonSA" ContentPlaceHolderID="MainContent" Runat="Server">
     <div>
     
-       &nbsp;&nbsp;&nbsp;
-    
         <asp:Menu ID="MenuSA" runat="server" Orientation="Horizontal">
             <Items>
                 <asp:MenuItem Text="Cadastrar Médico" Value="Cadastrar Médico" NavigateUrl="~/CadMedSa.aspx"></asp:MenuItem>
                 <asp:MenuItem Text="Paciente" Value="Paciente">
                     <asp:MenuItem Text="Cadastrar" Value="Cadastrar" NavigateUrl="~/CadPacienteSA.aspx"></asp:MenuItem>
-                    <asp:MenuItem Text="Mandar SMS" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Mandar e-mail" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Visualizar avaliações" Value="Visualizar avaliações" NavigateUrl="~/VerAvaliacaoSA.aspx"></asp:MenuItem>
                 </asp:MenuItem>
                 <asp:MenuItem Text="Cadastrar Especialidade" Value="Cadastrar Especialidade" NavigateUrl="~/especialidadeSA.aspx"></asp:MenuItem>
@@ -24,6 +22,7 @@
                 <asp:MenuItem NavigateUrl="~/CadSA.aspx" Text="Cadastrar outro Secretário" Value="Cadastrar outro Secretário"></asp:MenuItem>
                 <asp:MenuItem NavigateUrl="~/logonSA.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>
         
         <asp:Label ID="lblErro" runat="server"></asp:Label>

@@ -14,6 +14,8 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
     private static List<int> crms = new List<int>();
     protected void Page_Load(object sender, EventArgs e)
     {
+        lblErro.Text = string.Empty;
+
         if (!IsPostBack)
         {
             crms.Clear();
@@ -28,8 +30,8 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
             {
                 Response.Redirect("LogonPac.aspx");
             }
-            try
-            {
+           try
+            { 
             if(Conexao.conexao.State!=System.Data.ConnectionState.Open)
                 Conexao.conexao.Open();
                 string query = "select * from medicosRelPac_view where usuario=@usuario";
@@ -57,7 +59,7 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
                 rdr.Close();
                 Conexao.conexao.Close();
                 rdr = null;
-           }
+            }
             catch
             {
                 if(rdr!=null)
@@ -148,7 +150,10 @@ public partial class UltimasConsultasPac : System.Web.UI.Page
 
     protected void btnRedefinir_Click(object sender, EventArgs e)
     {
-        
+        /*int numLinhas = tabDados.Rows.Count;
+        for (int i = numLinhas - 1; i >= 0; i++)
+            tabDados.Rows.RemoveAt(i);
+        btnGeraRelatorio_Click(null, null);*/
         Response.Redirect("UltimasConsultasPac.aspx");
     }
 }

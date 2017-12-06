@@ -27,4 +27,10 @@ public partial class SA : System.Web.UI.Page
     {
 
     }
+
+    protected void MenuSA_MenuItemClick1(object sender, MenuEventArgs e)
+    {
+        if (e.Item.Text.ToUpper() == "LOGOUT")
+            Request.QueryString["logout"] = "true";
+    }
 }

@@ -5,32 +5,19 @@
 <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="ajaxToolkit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
+    <h2>Relatórios estatísticos</h2>
+
+    <asp:Menu ID="Menu1" runat="server" BackColor="White">
+        <Items>
+            <asp:MenuItem NavigateUrl="~/EstatisticaAtendimentosEspecialidade.aspx" Text="Atendimentos por especialidade" Value="Atendimentos por especialidade"></asp:MenuItem>
+            <asp:MenuItem NavigateUrl="~/EstatisticaCancelamentosConsulta.aspx" Text="Cancelamentos de consultas" Value="Cancelamentos de consultas"></asp:MenuItem>
+            <asp:MenuItem NavigateUrl="~/EstatisticaConsultasMedico.aspx" Text="Consultas dos médicos" Value="Consultas dos médicos"></asp:MenuItem>
+            <asp:MenuItem NavigateUrl="~/EstatisticaConsultasPaciente.aspx" Text="Consultas por paciente" Value="Consultas por paciente"></asp:MenuItem>
+            <asp:MenuItem NavigateUrl="~/Principal.aspx" Text="Retornar"></asp:MenuItem>
+        </Items>
+        <StaticMenuItemStyle VerticalPadding="5px" />
+    </asp:Menu>
     <p>
-        Consultas do médico
-        <asp:DropDownList ID="ddlMedico" runat="server" DataSourceID="dsEstatistica" DataTextField="nome" DataValueField="crm" AutoPostBack="True" OnDataBound="ddlMedico_DataBound">
-        </asp:DropDownList>
         &nbsp;</p>
-    <ajaxToolkit:BarChart ID="grafConsultasMedico" runat="server" ChartHeight="100" ChartTitle="Consultas por mês" Height="386px">
-    </ajaxToolkit:BarChart>
-    <p>
-        Atendimentos no dia
-        <asp:TextBox ID="txtDiaConsultas" runat="server" AutoPostBack="True" TextMode="Date" ValidateRequestMode="Enabled"></asp:TextBox>
-    </p>
-    <ajaxToolkit:PieChart ID="grafAtendimentosEspecialidade" runat="server" ChartHeight="100" ChartTitle="Atendimentos por especialidade" Height="352px">
-    </ajaxToolkit:PieChart>
-    <p>
-        </p>
-    <ajaxToolkit:BarChart ID="grafConsultasPaciente" runat="server" ChartHeight="100" ChartTitle="Consultas por paciente" ChartType="Bar" Height="386px">
-    </ajaxToolkit:BarChart>
-    <p>
-        Consultas canceladas no ano
-        <asp:DropDownList ID="ddlAnoCancelamento" runat="server" AutoPostBack="True">
-        </asp:DropDownList>
-    </p>
-    <ajaxToolkit:BarChart ID="grafCancelamentosConsulta" runat="server" ChartHeight="100" ChartTitle="Cancelamentos por mês" Height="386px">
-    </ajaxToolkit:BarChart>
-    <p>
-        <asp:SqlDataSource ID="dsEstatistica" runat="server" ConnectionString="<%$ ConnectionStrings:PRII16191ConnectionString %>" SelectCommand="SELECT [crm], [nome] FROM [Medico]"></asp:SqlDataSource>
-&nbsp;</p>
 </asp:Content>
 

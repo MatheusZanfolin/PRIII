@@ -14,6 +14,8 @@ public partial class CadDiagnosticoMed : System.Web.UI.Page
     static int crmMedOnline;
     protected void Page_Load(object sender, EventArgs e)
     {
+        lblErro.Text = string.Empty;
+
         try
         {
             if (!IsPostBack)
@@ -69,14 +71,20 @@ public partial class CadDiagnosticoMed : System.Web.UI.Page
                 lblErro.Text = "Sucesso ao cadastrar o diagnóstico!";
 
                 lblErro.ForeColor = Color.Green;
+
+                LimparTela();
             }
             else if(linhasAlteradas == 0)
             {
                 lblErro.Text = "Verifique os dados e tente novamente!";
+
+                lblErro.ForeColor = Color.Red;
             }
             else
             {
                 lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
+
+                lblErro.ForeColor = Color.Red;
             }
 
             Conexao.conexao.Close();
@@ -87,6 +95,15 @@ public partial class CadDiagnosticoMed : System.Web.UI.Page
                 Conexao.conexao.Close();
             lblErro.Text = "Ocorreu um erro inesperado! Estamos trabalhando continuamente para resolver o problema! Por favor, tente novamente mais tarde!";
         }
+    }
+
+    private void LimparTela()
+    {
+        txtDiagnostico.Text = txtUsuario.Text = txtData.Text = string.Empty;
+
+        ddlHorarios.SelectedIndex = 0;
+
+        txtDiagnostico.Visible = ddlHorarios.Visible = lblDiagnostico.Visible = lblHorario.Visible = false;
     }
 
     protected void txtData_TextChanged(object sender, EventArgs e)
@@ -126,7 +143,7 @@ public partial class CadDiagnosticoMed : System.Web.UI.Page
             var leitor = cmd.ExecuteReader();
 
             if (leitor.HasRows)
-                ddlHorarios.Visible = true;
+                ddlHorarios.Visible = lblHorario.Visible = true;
             else
                 lblErro.Text = "Verifique os dados e tente novamente!";
 
@@ -156,7 +173,7 @@ public partial class CadDiagnosticoMed : System.Web.UI.Page
 
     protected void ddlHorarios_SelectedIndexChanged(object sender, EventArgs e)
     {
-        btnCadastrar.Visible = ddlHorarios.SelectedIndex != 0;
+        txtDiagnostico.Visible = lblDiagnostico.Visible = ddlHorarios.SelectedIndex != 0;
     }
 
     protected void txtDiagnostico_TextChanged(object sender, EventArgs e)

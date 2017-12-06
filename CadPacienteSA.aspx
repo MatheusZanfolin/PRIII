@@ -2,12 +2,13 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" Runat="Server">
     
+
         <asp:Menu ID="MenuSA" runat="server" Orientation="Horizontal">
             <Items>
                 <asp:MenuItem Text="Cadastrar Médico" Value="Cadastrar Médico" NavigateUrl="~/CadMedSa.aspx"></asp:MenuItem>
                 <asp:MenuItem Text="Paciente" Value="Paciente">
                     <asp:MenuItem Text="Cadastrar" Value="Cadastrar" NavigateUrl="~/CadPacienteSA.aspx"></asp:MenuItem>
-                    <asp:MenuItem Text="Mandar SMS" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Mandar e-mail" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Visualizar avaliações" Value="Visualizar avaliações" NavigateUrl="~/VerAvaliacaoSA.aspx"></asp:MenuItem>
                 </asp:MenuItem>
                 <asp:MenuItem Text="Cadastrar Especialidade" Value="Cadastrar Especialidade" NavigateUrl="~/especialidadeSA.aspx"></asp:MenuItem>
@@ -20,10 +21,11 @@
                 <asp:MenuItem NavigateUrl="~/CadSA.aspx" Text="Cadastrar outro Secretário" Value="Cadastrar outro Secretário"></asp:MenuItem>
                 <asp:MenuItem NavigateUrl="~/logonSA.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>
         <h1>Confirmar Cadastro de Paciente</h1>
         <asp:Label ID="lblErro" runat="server" Font-Bold="False" Font-Names="Times New Roman" Font-Overline="False" Font-Size="20pt" Font-Underline="True" ForeColor="Red"></asp:Label>
-        <asp:SqlDataSource ID="dsPendencias" runat="server" ConnectionString="<%$ ConnectionStrings:PRII16191ConnectionString %>" SelectCommand="SELECT [usuario], [usuarioPendente] FROM [usuariosPendentes_view]"></asp:SqlDataSource>
+        <br />
         <table>
             <tr>
                 <td>
@@ -69,5 +71,6 @@
 
         <asp:Button ID="btnDeferir" runat="server" Text="Deferir" OnClick="btnDeferir_Click" />
         <asp:Button ID="btnIndeferir" runat="server" Text="Indeferir" OnClick="btnIndeferir_Click" Enabled="False" />
+    <asp:SqlDataSource ID="dsPendencias" runat="server" ConnectionString="<%$ ConnectionStrings:PRII16191ConnectionString %>" SelectCommand="SELECT [usuario], [usuarioPendente] FROM [usuariosPendentes_view]"></asp:SqlDataSource>
 </asp:Content>
 

@@ -7,6 +7,8 @@ using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Web.Configuration;
 using System.Net.Mail;
+using System.Net;
+
 public partial class MandarSMSPacSA : System.Web.UI.Page
 {
     SqlDataReader rdr = null;
@@ -49,7 +51,6 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
     protected void btnEnviar_Click(object sender, EventArgs e)
     {
         // instancia objeto que permite enviar e-mail
-        MailMessage objMail = new MailMessage();
         try
         {
 
@@ -60,7 +61,8 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
                 lblErro.Text = "Digite a mensagem!";
                 return;
             }
-            //limite de tamanho da mensagem?
+
+            
             string usuario = txtPaciente.Text;
             if (string.IsNullOrEmpty(usuario))
             {
@@ -68,7 +70,8 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
                 return;
             }
             
-            Conexao.conexao.Open();
+            if (Conexao.conexao.State != System.Data.ConnectionState.Open)
+                Conexao.conexao.Open();
 
             string query = "";
             string email = "";
@@ -93,17 +96,29 @@ public partial class MandarSMSPacSA : System.Web.UI.Page
             Conexao.conexao.Close();
 
             rdr = null;
+
             //enviar SMS
-            MailMessage mailMessage = new MailMessage ("caratecam@gmail.com", email);
+           try
+            {
+                MailMessage objMensagem = new MailMessage();
+                objMensagem.From = new MailAddress("caratecam@gmail.com");
+                objMensagem.To.Add(email);
+                objMensagem.Subject = "Sistema Consultório Médico";
+                objMensagem.Body = txtMensagem.Text;
+                SmtpClient sc = new SmtpClient("smtp.gmail.com");
+                sc.Port = 25;
+                sc.Credentials = new NetworkCredential("caratecam@gmail.com", "lucasdoi108");
+                sc.EnableSsl = true;
+                sc.Send(objMensagem);
+                lblErro.Text= "Email enviado com sucesso!";
+                //lblErro.ForeColor = System.Drawing.Color.Green;
+            }
+            catch 
+            {
+                lblErro.Text = "O email do usuario, não é valido";
+            }
 
-            // tirei o email body
 
-            mailMessage.Subject = txtMensagem.Text;
-
-            
-            SmtpClient smtpClient = new SmtpClient();
-        
-            smtpClient.Send(mailMessage);
 
         }
         catch

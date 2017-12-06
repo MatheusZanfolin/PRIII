@@ -9,7 +9,7 @@
                 <asp:MenuItem Text="Cadastrar Médico" Value="Cadastrar Médico" NavigateUrl="~/CadMedSa.aspx"></asp:MenuItem>
                 <asp:MenuItem Text="Paciente" Value="Paciente">
                     <asp:MenuItem Text="Cadastrar" Value="Cadastrar" NavigateUrl="~/CadPacienteSA.aspx"></asp:MenuItem>
-                    <asp:MenuItem Text="Mandar SMS" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
+                    <asp:MenuItem Text="Mandar e-mail" Value="Mandar SMS" NavigateUrl="~/MandarSMSPacSA.aspx"></asp:MenuItem>
                     <asp:MenuItem Text="Visualizar avaliações" Value="Visualizar avaliações" NavigateUrl="~/VerAvaliacaoSA.aspx"></asp:MenuItem>
                 </asp:MenuItem>
                 <asp:MenuItem Text="Cadastrar Especialidade" Value="Cadastrar Especialidade" NavigateUrl="~/especialidadeSA.aspx"></asp:MenuItem>
@@ -22,6 +22,7 @@
                 <asp:MenuItem NavigateUrl="~/CadSA.aspx" Text="Cadastrar outro Secretário" Value="Cadastrar outro Secretário"></asp:MenuItem>
                 <asp:MenuItem NavigateUrl="~/logonSA.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
             </Items>
+            <StaticMenuItemStyle HorizontalPadding="10px" />
         </asp:Menu>
         <h1>Consultas Solicitadas</h1>
         <asp:Label ID="lblErro" runat="server" ForeColor="Red"></asp:Label>
@@ -30,7 +31,7 @@
                 <td><asp:Label ID="Label1" runat="server" Text="Selecione a consulta:"></asp:Label></td>
                 <td>
         
-        <asp:ListBox ID="lsbConsulta" runat="server" OnSelectedIndexChanged="lsbConsulta_SelectedIndexChanged"></asp:ListBox>
+        <asp:ListBox ID="lsbConsulta" runat="server" OnSelectedIndexChanged="lsbConsulta_SelectedIndexChanged" AutoPostBack="True"></asp:ListBox>
       
             <asp:RequiredFieldValidator ID="rfvMedico3" runat="server" ErrorMessage="Selecione uma consulta!" ValidationGroup="lsbMedico" ControlToValidate="lsbConsulta"></asp:RequiredFieldValidator>
       
@@ -100,12 +101,9 @@
         <p>
           
 
-            <asp:Button ID="btnAgendar" runat="server" OnClick="btnAgendar_Click" Text="Alterar Consulta" />
+            <asp:Button ID="btnAgendar" runat="server" OnClick="btnAgendar_Click" Text="Marcar Consulta" />
           
 
-    </p>
-        <p>
-        
     </p>
 
 
